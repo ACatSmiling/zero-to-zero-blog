@@ -84,7 +84,7 @@ BeanFactory 接口定义了 Spring 容器的最基本功能，它提供了以下
   boolean containsBean(String name);
   ```
 
-- `isSingleton(String name)`：判断指定名称的 Bean 是否是单例（Singleton 模式）。
+- `isSingleton(String name)`：判断指定名称的 Bean 是否是单例（singleton 模式）。
 
   ```java
   /**
@@ -105,7 +105,7 @@ BeanFactory 接口定义了 Spring 容器的最基本功能，它提供了以下
   boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
   ```
 
-- `isPrototype(String name)`：判断指定名称的 Bean 是否是多例（Prototype 模式）。
+- `isPrototype(String name)`：判断指定名称的 Bean 是否是多例（prototype 模式）。
 
   ```java
   /**
@@ -189,7 +189,7 @@ ClassPathXmlApplicationContext 的 Diagrams 结构图如下所示：
 
 #### AnnotationConfigApplicationContext
 
-**`AnnotationConfigApplicationContext`**：**是针对 Java 注解配置的 ApplicationContext 实现，它允许开发者通过 Java 注解而不是 XML 文件来配置 Spring 容器。**这种方式支持更加现代的编程习惯，允许通过注解（如 @Configuration, @Component, @Service 等）来声明 Bean 和它们的依赖。使用 AnnotationConfigApplicationContext 时，需要提供一个或多个带有 @Configuration 注解的 Java 配置类，这些类中包含了 Bean 的定义和配置信息。
+**`AnnotationConfigApplicationContext`**：**是针对 Java 注解配置的 ApplicationContext 实现，它允许开发者通过 Java 注解而不是 XML 文件来配置 Spring 容器。**这种方式支持更加现代的编程习惯，允许通过注解（如 @Configuration、@Component、@Service 等）来声明 Bean 和它们的依赖。使用 AnnotationConfigApplicationContext 时，需要提供一个或多个带有 @Configuration 注解的 Java 配置类，这些类中包含了 Bean 的定义和配置信息。
 
 创建 AnnotationConfigApplicationContext 的示例代码如下：
 
@@ -291,7 +291,7 @@ WebApplicationContext 的 Diagrams 结构图如下所示：
 
 ### Bean 的循环依赖
 
-在 Spring [官方文档](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html)对`Circular dependencies`进行了明确的说明（当前最新版本为 6.1.11）：
+在 Spring [官方文档](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html)对`circular dependencies`进行了明确的说明（当前最新版本为 6.1.11）：
 
 ```tex
 If you use predominantly constructor injection, it is possible to create an unresolvable circular dependency scenario.
@@ -307,7 +307,7 @@ Unlike the typical case (with no circular dependencies), a circular dependency b
 
 pom.xml：
 
-```x
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -410,7 +410,7 @@ public class B {
 </beans>
 ```
 
-- scope 默认为 singleton。
+> scope 默认为 singleton。
 
 创建 Spring 容器测试类：
 
@@ -500,7 +500,7 @@ Caused by: org.springframework.beans.factory.BeanCurrentlyInCreationException: E
 	... 17 more
 ```
 
-通过以上测试，可以发现，当 Spring 容器中 Bean 的 scope 为 prototype 时，循环依赖的问题无法解决，Spring 容器创建对象时，抛出了`BeanCurrentlyInCreationException`。由此，可以得出结论：**Spring 容器中，默认的单例（Singleton）场景，支持循环依赖，原型（Prototype）场景，不支持循环依赖，会抛出 BeanCurrentlyInCreationException。**
+通过以上测试，可以发现，当 Spring 容器中 Bean 的 scope 为 prototype 时，循环依赖的问题无法解决，Spring 容器创建对象时，抛出了`BeanCurrentlyInCreationException`。由此，可以得出结论：**Spring 容器中，默认的单例（singleton）场景，支持循环依赖，原型（prototype）场景，不支持循环依赖，会抛出 BeanCurrentlyInCreationException。**
 
 #### DefaultSingletonBeanRegistry
 
@@ -570,9 +570,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 >如果一个 Bean 是 Setter 注入，另一个 Bean 是构造器注入，则需要分情况：
 >
 >1. `假设 A 通过 Setter 注入 B，B 通过构造器注入 A，此时，循环依赖问题可以解决。`
->   - 因为 A 是 Setter 注入，A 可以正常 new 一个实例，当其 Setter 注入属性 B 时，需要先 new B，此时，因为 B 是构造器注入，可以将前面 new 出来的 A 实例注入，完成 B 的初始化。最后，初始化完成的 B，可以正常使 A 完成初始化。
+>     - 因为 A 是 Setter 注入，A 可以正常 new 一个实例，当其 Setter 注入属性 B 时，需要先 new B，此时，因为 B 是构造器注入，可以将前面 new 出来的 A 实例注入，完成 B 的初始化。最后，初始化完成的 B，可以正常使 A 完成初始化。
+>
 >2. `假设 A 通过构造器注入 B，B 通过 Setter 注入 A，此时，循环依赖问题无法解决。`
->   - 因为 A 是构造器注入，在 new A 的时候，需要先 new B，此时，因为 B 是 Setter 注入，B 在属性注入 A 的时候，发现找不到 A，B 初始化也失败。最终，A 和 B 都无法创建成功。或许，你会认为，可以先实例化 B 啊，然后能成功实例化 A。确实，思路没错，但是， `Spring 容器是按照字母序创建 Bean 的，A 的创建永远排在 B 前面，`所以无法完成。
+>     - 因为 A 是构造器注入，在 new A 的时候，需要先 new B，此时，因为 B 是 Setter 注入，B 在属性注入 A 的时候，发现找不到 A，B 初始化也失败。最终，A 和 B 都无法创建成功。或许，你会认为，可以先实例化 B 啊，然后能成功实例化 A。确实，思路没错，但是， `Spring 容器是按照字母序创建 Bean 的，A 的创建永远排在 B 前面`，所以无法完成。
 
 结论：
 
