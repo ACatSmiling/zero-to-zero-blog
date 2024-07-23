@@ -2,13 +2,11 @@
 
 *`Since: 2024-07-22`*
 
-## 锁
-
 `锁`是计算机协调多个进程或线程并发访问某一资源的机制。在程序开发中会存在多线程同步的问题，当多个线程并发访问某个数据的时候，尤其是针对一些敏感的数据（比如订单、金额等)，就需要保证这个数据在任何时刻最多只有一个线程在访问，保证数据的完整性和一致性。在开发过程中加锁是为了保证数据的一致性，这个思想在数据库领域中同样很重要。
 
 在数据库中，除传统的计算资源（如 CPU、RAM、I/O 等）的争用以外，数据也是一种供许多用户共享的资源。**为保证数据的一致性，需要对并发操作进行控制，因此产生了锁。同时，锁机制也为实现 MySQL 的各个隔离级别提供了保证。**锁冲突也是影响数据库并发访问性能的一个重要因素。所以锁对数据库而言显得尤其重要，也更加复杂。
 
-### MySQL 并发事务访问相同记录
+## MySQL 并发事务访问相同记录
 
 MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
@@ -16,21 +14,21 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 2. 写-写
 3. 读-写或写-读
 
-#### 读-读
+### 读-读
 
 `读-读`，即**并发事务相继读取相同的记录**。读取操作本身不会对记录有任何影响，并不会引起什么问题，所以`允许`这种情况的发生。
 
-#### 写-写
+### 写-写
 
 `写-写`，即**并发事务相继对相同的记录做出改动**。
 
 在这种情况下会发生`脏写`的问题，任何一种隔离级别都不允许这种问题的发生。所以在多个未提交事务相继对一条记录做改动时，需要让它们`排队执行`，这个排队的过程其实是通过锁来实现的。这个所谓的锁其实是一个内存中的结构，在事务执行前本来是没有锁的，也就是说一开始是没有锁结构和记录进行关联的，如图所示：
 
-<img src="mysql-lock-mvcc/image-20240707102901731.png" alt="image-20240707102901731" style="zoom: 35%;" />
+<img src="mysql-lock/image-20240707102901731.png" alt="image-20240707102901731" style="zoom: 35%;" />
 
 当一个事务想对这条记录做改动时，首先会看看内存中有没有与这条记录关联的锁结构，当没有的时候就会在内存中生成一个锁结构与之关联。比如，事务`T1`要对这条记录做改动，就需要生成一个锁结构与之关联：
 
-<img src="mysql-lock-mvcc/image-20240707103135785.png" alt="image-20240707103135785" style="zoom:50%;" />
+<img src="mysql-lock/image-20240707103135785.png" alt="image-20240707103135785" style="zoom:50%;" />
 
 在锁结构里有很多信息，为了简化理解，只把两个比较重要的属性拿了出来:
 
@@ -41,11 +39,11 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
 在事务 T1 提交之前，另一个事务`T2`也想对该记录做改动，那么先看看有没有锁结构与这条记录关联，发现有一个锁结构与之关联后，然后也生成了一个锁结构与这条记录关联，不过锁结构的 is_waiting 属性值为 true，表示当前事务需要等待，把这个场景就称之为获取锁失败，或者加锁失败。如图所示：
 
-<img src="mysql-lock-mvcc/image-20240707103608183.png" alt="image-20240707103608183" style="zoom: 67%;" />
+<img src="mysql-lock/image-20240707103608183.png" alt="image-20240707103608183" style="zoom: 67%;" />
 
 在事务 T1 提交之后，就会把该事务生成的锁结构释放掉，然后看看还有没有别的事务在等待获取锁，发现了事务 T2 还在等待获取锁，所以把事务 T2 对应的锁结构的 is_waiting 属性设置为 false，然后把该事务对应的线程唤醒，让它继续执行，此时事务 T2 就算获取到锁了。效果图就是这样：
 
-<img src="mysql-lock-mvcc/image-20240707103751379.png" alt="image-20240707103751379" style="zoom:50%;" />
+<img src="mysql-lock/image-20240707103751379.png" alt="image-20240707103751379" style="zoom:50%;" />
 
 小结几种说法:
 
@@ -53,7 +51,7 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 - `获取锁成功，或者加锁成功`：意思就是在内存中生成了对应的锁结构，而且锁结构的 is_waiting 属性为 false，也就是事务可以继续执行操作。
 - `获取锁失败，或者加锁失败，或者没有获取到锁`：意思就是在内存中生成了对应的锁结构，不过锁结构的 is_waiting 属性为 true，也就是事务需要等待，不可以继续执行操作。
 
-#### 读-写或写-读
+### 读-写或写-读
 
 `读-写`或者`写-读`，即一个事务进行读取操作，另一个进行改动操作，这种情况下可能发生`脏读`、`不可重复读`、`幻读`的问题。
 
@@ -85,11 +83,11 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
 一般情况下当然愿意采用 MVCC 来解决读-写操作并发执行的问题，但是业务在某些特殊情况下，要求必须采用加锁的方式执行。下面就讲解下 MySQL 中不同类别的锁。
 
-### 锁的分类
+## 锁的分类
 
-<img src="mysql-lock-mvcc/1720321735370.jpg" alt="1720321735370" style="zoom:80%;" />
+<img src="mysql-lock/1720321735370.jpg" alt="1720321735370" style="zoom:80%;" />
 
-#### 按数据操作的类型划分：读锁、写锁
+### 按数据操作的类型划分：读锁、写锁
 
 对于数据库中并发事务的读-读情况并不会引起什么问题，对于写-写、读-写或写-读这些情况可能会引起一些问题，需要使用 MVCC 或者加锁的方式来解决它们。在使用加锁的方式解决问题时，由于既要允许读-读情况不受影响，又要使写-写、读-写或写-读情况中的操作相互阻塞，所以 MySQL 实现一个由两种类型的锁组成的锁系统来解决。这两种类型的锁，通常被称为`共享锁 (Shared Lock，S Lock) 和排他锁 (Exclusive Lock，X Lock)`，也叫`读锁 (Read Lock) 和写锁 (Write Lock)`。
 
@@ -106,7 +104,7 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 | X 锁     | 不兼容 | 不兼容 |
 | S 锁     | 不兼容 | 兼容   |
 
-##### 锁定读
+#### 锁定读
 
 在采用加锁方式解决脏读、不可重复读、幻读这些问题时，读取一条记录时需要获取该记录的 S 锁，其实是不严谨的，有时候需要在读取记录时就获取记录的 X 锁 ，来禁止别的事务读写该记录，为此 MySQL 提出了两种比较特殊的 SELECT 语句格式：
 
@@ -132,19 +130,19 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
 - S ---> S：事务 A 先获取 account 表的 S 锁，此时，事务 B 也可以正常获得 account 表的 S 锁，并读取记录。
 
-  ![image-20240707112619440](mysql-lock-mvcc/image-20240707112619440.png)
+  ![image-20240707112619440](mysql-lock/image-20240707112619440.png)
 
 - S ---> X：事务 A 先获取 account 表的 S 锁，此时，事务 B 无法获取 account 表的 X 锁，被阻塞，直到事务 A 提交，事务 B 才可以正常获取 account 表的 X 锁。
 
-  ![image-20240707112713118](mysql-lock-mvcc/image-20240707112713118.png)
+  ![image-20240707112713118](mysql-lock/image-20240707112713118.png)
 
 - X ---> S：事务 A 先获取 account 表的 X 锁，此时，事务 B 无法获取 account 表的 S 锁，被阻塞，直到事务 A 提交，事务 B 才可以正常获取 account 表的 S 锁。
 
-  ![image-20240707113011011](mysql-lock-mvcc/image-20240707113011011.png)
+  ![image-20240707113011011](mysql-lock/image-20240707113011011.png)
 
 - X ---> X：事务 A 先获取 account 表的 X 锁，此时，事务 B 无法获取 account 表的 X 锁，被阻塞，直到事务 A 提交，事务 B 才可以正常获取 account 表的 X 锁。
 
-  ![image-20240707113033633](mysql-lock-mvcc/image-20240707113033633.png)
+  ![image-20240707113033633](mysql-lock/image-20240707113033633.png)
 
 >在 MySQL 5.7 及之前的版本，SELECT … FOR UPDATE，如果获取不到锁，会一直等待，直到 innodb_lock_wait_timeout 超时。在 MySQL 8.0 版本中，在 SELECT … FOR UPDATE，SELECT … FOR SHARE 后添加`NOWAIT`、`SKIP LOCKED`语法，可以跳过锁等待，或者跳过锁定。
 >
@@ -180,7 +178,7 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 >Query Ok,o rows affected (0.00 sec)
 >```
 
-##### 写操作
+#### 写操作
 
 平常所用到的写操作无非是 DELETE、UPDATE、INSERT 这三种：
 
@@ -191,17 +189,17 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
   - 情况 3：**修改了该记录的键值。**则相当于在原记录上做 DELETE 操作之后再来一次 INSERT 操作，加锁操作就需要按照 DELETE 和 INSERT 的规则进行。（同情况 2）
 - `INSERT`：一般情况下，新插入一条记录的操作并不加锁，通过一种称之为`隐式锁`的结构，来保护这条新插入的记录在本事务提交前不被别的事务访问。（因为插入之前就没有要锁的记录，所以也就不需要加 X 锁了）
 
-#### 按数据操作的粒度划分：表级锁、页级锁、行锁
+### 按数据操作的粒度划分：表级锁、页级锁、行锁
 
 为了尽可能提高数据库的并发度，每次锁定的数据范围越小越好，理论上每次只锁定当前操作的数据的方案会得到最大的并发度，但是管理锁是很耗资源的事情（涉及获取、检查、释放锁等动作）。因此数据库系统需要在`高并发响应`和`系统性能`两方面进行平衡，这样就产生了`锁粒度 (Lock granularity)`的概念。
 
 **对一条记录加锁影响的也只是这条记录而已，我们就说这个锁的粒度比较细；其实一个事务也可以在表级别进行加锁，自然就被称之为表级锁或者表锁，对一个表加锁影响整个表中的记录，我们就说这个锁的粒度比较粗。**锁的粒度主要分为`表级锁`、`页级锁`和`行锁`。
 
-##### 表锁（Table Lock）
+#### 表锁（Table Lock）
 
 **`表锁`会锁定整张表，它是 MySQL 中最基本的锁策略，并不依赖于存储引擎（不管是 MySQL 的什么存储引擎，对于表锁的策略都是一样的），并且表锁是开销最小的策略（因为粒度比较大）。由于表级锁一次会将整个表锁定，所以可以很好的避免死锁问题。当然，锁的粒度大所带来最大的负面影响就是出现锁资源争用的概率也会最高，导致并发率大打折扣。**
 
-###### 表级别的 S 锁和 X 锁
+##### 表级别的 S 锁和 X 锁
 
 在对某个表执行 SELECT、INSERT、DELETE、UPDATE 语句时，InnoDB 存储引擎是不会为这个表添加表级别的 S 锁或者 X 锁的。在对某个表执行一些诸如 ALTER TABLE、DROP TABLE 这类的 DDL 语句时，其他事务对这个表并发执行诸如 SELECT、INSERT、DELETE、UPDATE 的语句会发生阻塞。同理，某个事务中对某个表执行 SELECT、INSERT、DELETE、UPDATE 语句时，在其他会话中对这个表执行 DDL 语句也会发生阻塞。这个过程其实是通过在 Server 层使用一种称之为`元数据锁 (Metadata Locks，简称 MDL)`的结构来实现的。
 
@@ -293,7 +291,7 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
 - 步骤 5：加读锁。为 mylock 表加 READ 锁（读阻塞写），观察阻塞的情况，流程如下：
 
-  ![image-20240707150709224](mysql-lock-mvcc/image-20240707150709224.png)
+  ![image-20240707150709224](mysql-lock/image-20240707150709224.png)
 
   ```mysql
   ########################SessonA中########################################
@@ -349,7 +347,7 @@ MySQL 并发事务访问相同记录的情况,大致可以划分为三种：
 
 - 步骤 6∶加写锁。为 mylock 表加 WRITE 锁，观察阻塞的情况，流程如下：
 
-  ![image-20240707154231079](mysql-lock-mvcc/image-20240707154231079.png)
+  ![image-20240707154231079](mysql-lock/image-20240707154231079.png)
 
   ```mysql
   ########################SessionA########################################
@@ -406,7 +404,7 @@ MySQL 的表级锁有两种模式：（以 MyISAM 表进行操作的演示）
   | 读锁   | 是       | 否       | 否               | 是         | 否，需等待 |
   | 写锁   | 是       | 是       | 否               | 否，需等待 | 否，需等待 |
 
-###### 意向锁（intention lock)
+##### 意向锁（intention lock)
 
 InnoDB 支持`多粒度锁 (multiple granularity locking)`，它允许行级锁与表级锁共存，而`意向锁`就是其中的一种表锁。
 
@@ -562,7 +560,7 @@ LOCK TABLES teacher READ;
 - **IX，IS 是表级锁，不会和行级的 X，S 锁发生冲突，只会和表级的 X，S 发生冲突。**
 - 意向锁在保证并发性的前提下，实现了行锁和表锁共存，且满足事务隔离性的要求。
 
-###### 自增锁（AUTO-INC 锁）
+##### 自增锁（AUTO-INC 锁）
 
 在使用 MySQL 过程中，我们可以为表的某个列添加`AUTO_INCREMENT`属性。举例：
 
@@ -608,7 +606,7 @@ SELECT * FROM teacher;
 >- `innodb_autoinc_lock_mode = 1("连续"锁定模式)`：在 MySQL 8.0 之前，连续锁定模式是默认的。在这个模式下，"Bulk inserts" 仍然使用 AUTO-INC 表级锁，并保持到语句结束。这适用于所有 INSERT … SELECT，REPLACE … SELECT 和 LOAD DATA 语句。同一时刻只有一个语句可以持有 AUTO-INC 锁。对于 "Simple inserts"（要插入的行数事先已知），则通过在 mutex（轻量锁）的控制下获得所需数量的自动递增值来避免表级 AUTO-INC 锁，它只在分配过程的持续时间内保持，而不是直到语句完成。"Simple inserts" 不使用表级 AUTO-INC 锁，除非 AUTO-INC 锁由另一个事务保持。如果另一个事务保持 AUTO-INC 锁，则 "Simple inserts" 等待 AUTO-INC 锁，如同它是一个 "Bulk inserts"。
 >- `innodb_autoinc_lock_mode = 2("交错"锁定模式)`：从 MySQL 8.0 开始，交错锁定模式是`默认`的。在这种锁定模式下，所有 INSERT 语句都不会使用表级 AUTO-INC 锁，并且可以同时执行多个语句。这是最快和最可扩展的锁定模式，但是当使用基于语句的复制或恢复方案时，从二进制日志重播 SQL 语句时，这是不安全的。在此锁定模式下，自动递增值保证在所有并发执行的所有类型的 INSERT 语句中是唯一且单调递增的。但是，由于多个语句可以同时生成数字（即，跨语句交叉编号），为任何给定语句插入的行生成的值可能不是连续的。如果执行的语句是 "Simple inserts"，其中要插入的行数已提前知道，除了 "Mixed-mode inserts" 之外，为单个语句生成的数字不会有间隙。然而，当执行 "Bulk inserts" 时，在由任何给定语句分配的自动递增值中可能存在间隙。
 
-###### 元数据锁（MDL 锁）
+##### 元数据锁（MDL 锁）
 
 MySQL 5.5 引入了`Meta Data Lock`，简称 MDL 锁，属于表锁范畴。**MDL 的作用是，保证读写的正确性。**比如，如果一个查询正在遍历一个表中的数据，而执行期间另一个线程对这个表结构做变更，增加了一列，那么查询线程拿到的结果跟表结构对不上，肯定是不行的。
 
@@ -622,25 +620,25 @@ MySQL 5.5 引入了`Meta Data Lock`，简称 MDL 锁，属于表锁范畴。**MD
 
 - 事务 A：从表中查询数据。
 
-  <img src="mysql-lock-mvcc/image-20240707171805808.png" alt="image-20240707171805808" style="zoom:80%;" />
+  <img src="mysql-lock/image-20240707171805808.png" alt="image-20240707171805808" style="zoom:80%;" />
 
 - 事务 B：修改表结构，增加新列。
 
-  <img src="mysql-lock-mvcc/image-20240707171834375.png" alt="image-20240707171834375" style="zoom:80%;" />
+  <img src="mysql-lock/image-20240707171834375.png" alt="image-20240707171834375" style="zoom:80%;" />
 
 - 事务 C：查看当前 MySQL 的进程，可以得出 B 中的阻塞就是因为 A 为 teacher 加了 MDL 锁。
 
-  ![image-20240707171948825](mysql-lock-mvcc/image-20240707171948825.png)
+  ![image-20240707171948825](mysql-lock/image-20240707171948825.png)
 
 - 在事务 B 中结束修改，重新进行读操作。
 
-  <img src="mysql-lock-mvcc/image-20240707172106997.png" alt="image-20240707172106997" style="zoom:80%;" />
+  <img src="mysql-lock/image-20240707172106997.png" alt="image-20240707172106997" style="zoom:80%;" />
 
 - 事务 B 中之前的所有进行提交，重新开启事务尽心修改，同时 C 中也开启一个事务进行查询。可以看出，事务 B 被阻塞，这是因为事务 A 拿到了 teacher 表的元数据读锁，事务 B 想申请 teacher 表的元数据写锁，由于读写锁互斥，事务 B 需要等待事务 A 释放元数据锁才能执行。而事务 C 要在表 teacher 上新申请 MDL 读锁的请求也会被事务 B 阻塞。如前面所说，所有对表的增删改查操作都需要先申请 MDL 读锁，现在就都会被阻塞了，也就等于这个表现在完全不可读写了，并发性大大降低！！！这也就是元数据锁可能带来的问题。
 
-  ![image-20240707172329486](mysql-lock-mvcc/image-20240707172329486.png)
+  ![image-20240707172329486](mysql-lock/image-20240707172329486.png)
 
-##### InnoDB 中的行锁（Row Lock）
+#### InnoDB 中的行锁（Row Lock）
 
 **`行锁`也称为记录锁，顾名思义，就是锁住某一行（某条记录 Row)。需要的注意的是，MySQL 服务器层并没有实现行锁机制，行级锁只在存储引擎层实现。**
 
@@ -682,19 +680,19 @@ SELECT *FROM student;
 
 student 表中的聚簇索引的简图如下所示：
 
-<img src="mysql-lock-mvcc/image-20240707195851775.png" alt="image-20240707195851775" style="zoom: 60%;" />
+<img src="mysql-lock/image-20240707195851775.png" alt="image-20240707195851775" style="zoom: 60%;" />
 
 这里把 B+ 树的索引结构做了一个超级简化，只把索引中的记录给拿了出来，下面看看都有哪些常用的行锁类型。
 
-###### 记录锁（Record Locks）
+##### 记录锁（Record Locks）
 
 `记录锁`也就是仅仅把一条记录锁上，官方的类型名称为`LOCK_REC_NOT_GAP`。比如把 id 值为 8 的那条记录加一个记录锁的示意图如图所示，仅仅是锁住了 id 值为 8 的记录，对周围的数据没有影响：
 
-<img src="mysql-lock-mvcc/image-20240707200151734.png" alt="image-20240707200151734" style="zoom:60%;" />
+<img src="mysql-lock/image-20240707200151734.png" alt="image-20240707200151734" style="zoom:60%;" />
 
 **举例如下：**
 
-<img src="mysql-lock-mvcc/image-20240707200245984.png" alt="image-20240707200245984" style="zoom: 80%;" />
+<img src="mysql-lock/image-20240707200245984.png" alt="image-20240707200245984" style="zoom: 80%;" />
 
 **代码演示：**
 
@@ -761,13 +759,13 @@ mysql> select * from student;
 - 当一个事务获取了一条记录的 S 型记录锁后，其他事务也可以继续获取该记录的 S 型记录锁，但不可以继续获取 X 型记录锁。
 - 当一个事务获取了一条记录的 X 型记录锁后，其他事务既不可以继续获取该记录的 S 型记录锁，也不可以继续获取 X 型记录锁。
 
-###### 间隙锁（Gap Locks）
+##### 间隙锁（Gap Locks）
 
 MySQL 在 REPEATABLE-READ 隔离级别下是可以解决幻读问题的，解决方案有两种，可以使用 MVCC 方案解决，也可以采用 加锁 方案解决。但是在使用加锁方案解决时有个大问题，就是事务在第一次执行读取操作时，那些幻影记录尚不存在，我们无法给这些幻影记录加上记录锁。InnoDB 提出了一种称之为`Gap Locks`的锁，官方的类型名称为`LOCK_GAP`，我们可以简称为`gap 锁`。
 
 比如，把 id 值为 5 的那条记录加一个 gap 锁的示意图如下：
 
-<img src="mysql-lock-mvcc/image-20240707200920693.png" alt="image-20240707200920693" style="zoom:58%;" />
+<img src="mysql-lock/image-20240707200920693.png" alt="image-20240707200920693" style="zoom:58%;" />
 
 **图中 id 值为 5 的记录加了gap 锁，意味着不允许别的事务在 id 值为 5 的记录所在的间隙插入新记录，其实就是 id 列的值 (3, 8) 这个区间的新记录是不允许立即插入的。**比如，有另外一个事务再想插入一条 id 值为 4 的新记录，它定位到该条新记录在 id 为 5 的间隙锁的范围内，所以就会阻塞插入操作，直到拥有这个 gap 锁的事务提交了之后，id 列的值在区间 (3, 8) 中的新记录才可以被插入。
 
@@ -789,7 +787,7 @@ gap 锁仅仅是为了防止插入幻影记录而提出的。虽然有共享 gap
 
 为了实现阻止其他事务插入 id 值在 (20, +∞) 这个区间的新记录，可以给索引中的最后一条记录，也就是 id 值为 20 的那条记录所在页面的 Supremum 记录加上一个 gap 锁，如图所示：
 
-<img src="mysql-lock-mvcc/image-20240707204132136.png" alt="image-20240707204132136" style="zoom:60%;" />
+<img src="mysql-lock/image-20240707204132136.png" alt="image-20240707204132136" style="zoom:60%;" />
 
 **代码演示：**
 
@@ -905,13 +903,13 @@ Query OK, 1 row affected (0.00 sec)
 
 那为啥发生死锁后，SessionA 执行失败，SessionB 又成功执行了呢？这涉及 MySQL 的`处理死锁机制`：**当 MySQL 发起死锁检测，发现死锁后，主动回滚死锁链条中的某一个事务（将持有最少行级排他锁的事务进行回滚），让其他事务得以继续执行！**（详见后文死锁章节分析）
 
-###### 临键锁（Next-Key Locks）
+##### 临键锁（Next-Key Locks）
 
 有时候既想锁住某条记录，又想阻止其他事务在该记录前边的间隙插入新记录，所以 InnoDB 就提出了一种称之为`Next-Key Locks`的锁，官方的类型名称为`LOCK_ORDINARY`，我们也可以简称为`next-key 锁`。**Next-Key Locks 是在存储引擎是 Innodb、事务级别在 REPEATABLE-READ 的情况下使用的数据库锁，Innodb 默认的锁就是 Next-Key locks。**
 
 比如，把 id 值为 8 的那条记录加一个 next-key 锁的示意图如下：
 
-<img src="mysql-lock-mvcc/image-20240707210441002.png" alt="image-20240707210441002" style="zoom:60%;" />
+<img src="mysql-lock/image-20240707210441002.png" alt="image-20240707210441002" style="zoom:60%;" />
 
 **next-key 锁的本质就是一个记录锁和一个 gap锁的合体，它既能保护该条记录，又能阻止别的事务将新记录插入被保护记录前边的间隙。**
 
@@ -956,7 +954,7 @@ mysql> commit;
 Query OK, 0 rows affected (0.00 sec)
 ```
 
-###### 插入意向锁（Insert Intention Locks）
+##### 插入意向锁（Insert Intention Locks）
 
 我们说一个事务在插入一条记录时，需要判断一下插入位置是不是被别的事务加了 gap 锁 （ next-key 锁也包含 gap 锁 ），如果有的话，插入操作需要等待，直到拥有 gap 锁的那个事务提交。但是，InnoDB 规定事务在等待的时候，也需要在内存中生成一个锁结构，表明有事务想在某个间隙中插入新记录，只是现在在等待。InnoDB 就把这种类型的锁命名为`Insert Intention Locks`，官方的类型名称为`LOCK_INSERT_INTENTION`，我们称为`插入意向锁`。插入意向锁是一种 gap 锁，不是意向锁，在 INSERT 操作时产生。
 
@@ -972,11 +970,11 @@ Query OK, 0 rows affected (0.00 sec)
 
 比如，把 id 值为 8 的那条记录加一个插入意向锁，示意图如下：
 
-<img src="mysql-lock-mvcc/image-20240707214350428.png" alt="image-20240707214350428" style="zoom:60%;" />
+<img src="mysql-lock/image-20240707214350428.png" alt="image-20240707214350428" style="zoom:60%;" />
 
 比如，现在 T1 为 id 值为 8 的记录加了一个 gap 锁，然后 T2 和 T3 分别想向 student 表中插入 id 值分别为 4、5 的两条记录，所以现在为 id 值为 8 的记录加的锁的示意图就如下所示：
 
-<img src="mysql-lock-mvcc/image-20240707214542389.png" alt="image-20240707214542389" style="zoom: 80%;" />
+<img src="mysql-lock/image-20240707214542389.png" alt="image-20240707214542389" style="zoom: 80%;" />
 
 从图中可以看到，由于 T1 持有 gap 锁，所以 T2 和 T3 需要生成一个插入意向锁的锁结构并且处于等待状态。当 T1 提交后会把它获取到的锁都释放掉，这样 T2 和 T3 就能获取到对应的插入意向锁了（本质上就是把插入意向锁对应锁结构的 is_waiting 属性改为 false），T2 和 T3 之间也并不会相互阻塞，它们可以同时获取到 id 值为 8 的插入意向锁，然后执行插入操作。事实上，插入意向锁并不会阻止别的事务继续获取该记录上任何类型的锁。
 
@@ -1017,7 +1015,7 @@ mysql>  insert into student(id,name,class) values(11,'Tim','一班'); # 插入�
 Query OK, 1 row affected (0.00 sec)
 ```
 
-##### 页锁
+#### 页锁
 
 `页锁`就是在`页的粒度`上进行锁定，锁定的数据资源比行锁要多，因为一个页中可以有多个行记录。当使用页锁的时候，会出现数据浪费的现象，但这样的浪费最多也就是一个页上的数据行。**页锁的开销介于表锁和行锁之间，会出现死锁。锁定粒度介于表锁和行锁之间，并发度一般。**
 
@@ -1031,11 +1029,11 @@ Query OK, 1 row affected (0.00 sec)
 
 每个层级的锁数量是有限制的，因为锁会占用内存空间，锁空间的大小是有限的。当某个层级的锁数量超过了这个层级的阈值时，就会进行`锁升级`。锁升级就是用更大粒度的锁替代多个更小粒度的锁，比如 InnoDB 中行锁升级为表锁，这样做的好处是占用的锁空间降低了，但同时数据的并发度也下降了。
 
-#### 按对待锁的态度划分：悲观锁、乐观锁
+### 按对待锁的态度划分：悲观锁、乐观锁
 
 从对待锁的态度来看锁的话，可以将锁分成`乐观锁`和`悲观锁`，从名字中也可以看出这两种锁是两种`看待数据并发的思维方式`。需要注意的是，乐观锁和悲观锁并不是锁，而是`锁的设计思想`。
 
-##### 悲观锁（Pessimistic Locking）
+#### 悲观锁（Pessimistic Locking）
 
 悲观锁是一种思想，顾名思义，就是很悲观，对数据被其他事务的修改持保守态度，会通过数据库自身的锁机制来实现，从而保证数据操作的排它性。
 
@@ -1089,17 +1087,17 @@ select … for update 是 MySQL 中的悲观锁。此时在 items 表中，id �
 
 悲观锁不适用的场景较多，它存在一些不足，因为悲观锁大多数情况下依靠数据库的锁机制来实现，以保证程序的并发访问性，同时这样对数据库性能开销影响也很大，特别是 `长事务` 而言，这样的`开销往往无法承受`，这时就需要乐观锁。
 
-##### 乐观锁（Optimistic Locking）
+#### 乐观锁（Optimistic Locking）
 
 **乐观锁认为对同一数据的并发操作不会总发生，属于小概率事件，不用每次都对数据上锁，但是在更新的时候会判断一下在此期间，别人有没有去更新这个数据，也就是不采用数据库自身的锁机制，而是通过程序来实现。**在程序上，可以采用`版本号机制`或者`CAS 机制`实现。**乐观锁适用于多读的应用类型，这样可以提高吞吐量。**在 Java 中 java.util.concurrent.atomic 包下的原子变量类就是使用了乐观锁的一种实现方式：CAS 实现的。
 
-###### 乐观锁的版本号机制
+##### 乐观锁的版本号机制
 
 在表中设计一个版本字段 version，第一次读的时候，会获取 version 字段的取值。然后对数据进行更新或删除操作时，会执行 UPDATE ... SET version = version + 1 WHERE version = version。此时，如果已经有事务对这条数据进行了更改，修改就不会成功。
 
 这种方式类似我们熟悉的 SVN、CVS 版本管理系统，当修改了代码进行提交时，首先会检查当前版本号与服务器上的版本号是否一致，如果一致就可以直接提交，如果不一致就需要更新服务器上的最新代码，然后再进行提交。
 
-###### 乐观锁的 CAS 机制
+##### 乐观锁的 CAS 机制
 
 时间戳和版本号机制一样，也是在更新提交的时候，将`当前数据的时间戳和更新之前取得的时间戳`进行比较，如果两者一致则更新成功，否则就是版本冲突。
 
@@ -1135,7 +1133,7 @@ update items set quantity = quantity - num where id = 1001 and quantity - num > 
 
 这样就会使每次修改都能成功，而且不会出现超卖的现象。
 
-###### 两种锁的适用场景
+##### 两种锁的适用场景
 
 从这两种锁的设计思想中，总结一下乐观锁和悲观锁的适用场景：
 
@@ -1145,11 +1143,11 @@ update items set quantity = quantity - num where id = 1001 and quantity - num > 
 
 把乐观锁和悲观锁总结如下图所示：
 
-<img src="mysql-lock-mvcc/image-20240707230658688.png" alt="image-20240707230658688" style="zoom: 60%;" />
+<img src="mysql-lock/image-20240707230658688.png" alt="image-20240707230658688" style="zoom: 60%;" />
 
-#### 按加锁的方式划分：隐式锁、显式锁
+### 按加锁的方式划分：隐式锁、显式锁
 
-##### 隐式锁
+#### 隐式锁
 
 >回顾：
 >
@@ -1217,7 +1215,7 @@ REQUESTING_OBJECT_INSTANCE_BEGIN: 140078009627240
 4. 等待加锁成功，被唤醒，或者超时。
 5. 写数据，并将自己的 事务 id 写入trx_id 字段。
 
-##### 显式锁
+#### 显式锁
 
 通过特定的语句进行加锁，一般称之为显示加锁，例如：
 
@@ -1233,7 +1231,7 @@ REQUESTING_OBJECT_INSTANCE_BEGIN: 140078009627240
   select ... for update;
   ```
 
-#### 其它锁之：全局锁
+### 其它锁之：全局锁
 
 `全局锁`就是**对整个数据库实例加锁**。当你需要让整个库处于`只读状态`的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（(数据的增删改）、数据定义语句（包括建表、修改表结构等）和更新类事务的提交语句。全局锁的典型使用场景是：做`全库逻辑备份`。
 
@@ -1243,9 +1241,9 @@ REQUESTING_OBJECT_INSTANCE_BEGIN: 140078009627240
 Flush tables with read lock;
 ```
 
-####  其它锁之：死锁
+### 其它锁之：死锁
 
-##### 基本概念
+#### 基本概念
 
 `死锁`是**指两个或多个事务在同一资源上相互占用，并请求锁定对方占用的资源，从而导致恶性循环。**死锁举例如下：
 
@@ -1323,7 +1321,7 @@ Query OK, 1 row affected (18.39 sec) # 具体死锁为啥会被解开，下面�
 Rows matched: 1  Changed: 1  Warnings: 0
 ```
 
-##### 如何处理死锁
+#### 如何处理死锁
 
 **方式一：等待，直到超时（默认 innodb_lock_wait_timeout=50s）。**
 
@@ -1337,11 +1335,11 @@ Rows matched: 1  Changed: 1  Warnings: 0
 
 这是一种较为`主动的死锁检测机制`，要求数据库`保存锁的信息链表`和`事务等待链表`两部分信息。
 
-<img src="mysql-lock-mvcc/image-20240707233744440.png" alt="image-20240707233744440" style="zoom:67%;" />
+<img src="mysql-lock/image-20240707233744440.png" alt="image-20240707233744440" style="zoom:67%;" />
 
 基于这两个信息，可以绘制 wait-for graph 算法等待图：
 
-<img src="mysql-lock-mvcc/image-20240707233843016.png" alt="image-20240707233843016" style="zoom:67%;" />
+<img src="mysql-lock/image-20240707233843016.png" alt="image-20240707233843016" style="zoom:67%;" />
 
 > 死锁检测的原理是构建一个以`事务为顶点、锁为边的有向图`，判断有向图是否存在`环`，存在即有死锁。
 
@@ -1356,7 +1354,7 @@ Rows matched: 1  Changed: 1  Warnings: 0
 
 >进一步的思路：可以考虑通过`将一行改成逻辑上的多行`来减少锁冲突。比如，连锁超市账户总额的记录，可以考虑放到多条记录上，账户总额等于这多个记录的值的总和。
 
-##### 如何避免死锁
+#### 如何避免死锁
 
 - 合理设计索引，使业务 SQL 尽可能通过索引定位更少的行，减少锁竞争。
 - 调整业务逻辑 SQL 执行顺序，避免 update/delete 等长时间持有锁的 SQL 在事务前面。
@@ -1364,7 +1362,7 @@ Rows matched: 1  Changed: 1  Warnings: 0
 - 在并发比较高的系统中，不要显式加锁，特别是是在事务里显式加锁。如 select … for update 语句，如果是在事务里运行了 start transaction 或设置了 autocommit 等于 0，那么就会锁定所查找到的记录。
 - 降低隔离级别。如果业务允许，将隔离级别调低也是较好的选择，比如将隔离级别从 RR 调整为 RC，可以避免掉很多因为 gap 锁造成的死锁。
 
-### 锁的内存结构
+## 锁的内存结构
 
 前边说对一条记录加锁的本质就是在内存中创建一个`锁结构`与之关联，那么是不是一个事务对多条记录加锁，就要创建多个锁结构呢？比如：
 
@@ -1382,7 +1380,7 @@ SELECT * FROM user LOCK IN SHARE MODE;
 
 InnoDB 存储引擎中的锁结构如下：
 
-<img src="mysql-lock-mvcc/image-20240708210424850.png" alt="image-20240708210424850" style="zoom: 50%;" />
+<img src="mysql-lock/image-20240708210424850.png" alt="image-20240708210424850" style="zoom: 50%;" />
 
 结构解析：
 
@@ -1405,7 +1403,7 @@ InnoDB 存储引擎中的锁结构如下：
 
 4. `type_mode`：这是一个 32 位的数，被分成了`lock_mode`、`lock_type`和`rec_lock_type`三个部分，如图所示。
 
-   <img src="mysql-lock-mvcc/image-20240708231033582.png" alt="image-20240708231033582" style="zoom:67%;" />
+   <img src="mysql-lock/image-20240708231033582.png" alt="image-20240708231033582" style="zoom:67%;" />
 
    - `锁的模式 lock_mode`，占用低 4 位，可选的值如下：
      - LOCK_IS（十进制的 0）：表示共享意向锁，也就是 IS 锁。
@@ -1430,7 +1428,7 @@ InnoDB 存储引擎中的锁结构如下：
 
 6. `一堆比特位`：如果是行锁结构的话，在该结构末尾还放置了一堆比特位，比特位的数量是由上边提到的 n_bits 属性表示的。InnoDB 数据页中的每条记录在记录头信息中都包含一个 heap_no 属性，伪记录 Infimum 的 heap_no 值为 0，Supremum 的 heap_no 值为 1，之后每插入一条记录，heap_no 值就增 1。锁结构最后的一堆比特位就对应着一个页面中的记录，一个比特位映射一个 heap_no，即一个比特位映射到页内的一条记录。
 
-### 锁监控
+## 锁监控
 
 关于 MySQL 锁的监控，我们一般可以通过检查`InnoDB_row_lock`等状态变量来分析系统上的行锁的争夺情况：
 
@@ -1466,476 +1464,6 @@ MySQL 5.7 及之前，可以通过 information_schema.INNODB_LOCKS 查看事务�
 MySQL 8.0 删除了 information_schema.INNODB_LOCKS，添加了`performance_schema.data_locks`，可以通过 performance_schema.data_locks 查看事务的锁情况，和 MySQL 5.7 及之前不同，**performance_schema.data_locks 不但可以看到阻塞该事务的锁，还可以看到该事务所持有的锁。**
 
 同时，information_schema.INNODB_LOCK_WAITS 也被`performance_schema.data_lock_waits`所代替。
-
-### 附录
-
-// TODO
-
-## 多版本并发控制
-
-### 什么是 MVCC
-
-**`MVCC`**：**Multiversion Concurrency Control，多版本并发控制。**顾名思义，**MVCC 是通过数据行的多个版本管理来实现数据库的并发控制**。这项技术使得在 InnoDB 的事务隔离级别下执行一致性读操作有了保证。换言之，就是为了查询一些正在被另一个事务更新的行，并且可以看到它们被更新之前的值，这样在做查询的时候就不用等待另一个事务释放锁。
-
-MVCC 没有正式的标准，在不同的 DBMS 中 MVCC 的实现方式可能是不同的，也不是普遍使用的（可以参考相关的 DBMS 文档）。这里讲解 InnoDB 中 MVCC 的实现机制（MySQL 其它的存储引擎并不支持它）。
-
-### 快照读与当前读
-
-MVCC 在 MySQL InnoDB 中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读，而这个读指的就是快照读，而非当前读。当前读实际上是一种加锁的操作，是悲观锁的实现，而 MVCC 本质是采用乐观锁思想的一种方式。
-
-#### 快照读
-
-**`快照读`**：**又叫一致性读，读取的是快照数据。**不加锁的简单的 SELECT 都属于快照读，即不加锁的非阻塞读。比如：
-
-```mysql
-SELECT * FROM player WHERE ...;
-```
-
-之所以出现快照读的情况，是**基于提高并发性能**的考虑，快照读的实现是基于 MVCC，它在很多情况下，避免了加锁操作，降低了开销。
-
-既然是基于多版本，那么**快照读可能读到的并不一定是数据的最新版本**，而有可能是之前的历史版本。
-
-快照读的**前提是隔离级别不是串行级别**，串行级别下的快照读会退化成当前读。
-
-#### 当前读
-
-**`当前读`**：**读取的是记录的最新版本**（最新数据，而不是历史版本的数据），读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁。加锁的 SELECT，或者对数据进行增删改操作，都会进行当前读。比如：
-
-```mysql
-SELECT * FROM student LOCK IN SHARE MODE; # 共享锁
-
-SELECT * FROM student FOR UPDATE; # 排他锁
-
-INSERT INTO student values ...; # 排他锁
-
-DELETE FROM student WHERE ...; # 排他锁
-
-UPDATE student SET ...; # 排他锁
-```
-
-> 注意：**InnoDB 增删改操作默认加 X 锁，读操作默认不加锁。**
-
-### 知识点回顾
-
-#### 再谈隔离级别
-
-事务有 4 个隔离级别，可能存在三种并发问题：（准确来说是四种，还有一种是脏写）
-
-<img src="mysql-lock-mvcc/image-20240720235523060.png" alt="image-20240720235523060" style="zoom: 33%;" />
-
-在 MySQL 中，默认的隔离级别是可重复读，可以解决脏读和不可重复读的问题，如果仅从定义的角度来看，它并不能解决幻读问题。如果想要解决幻读问题，就需要采用串行化的方式，也就是将隔离级别提升到最高，但这样一来就会大幅降低数据库的事务并发能力。
-
-**MVCC 可以不采用锁机制，而是通过乐观锁的方式来解决不可重复读和幻读问题！它可以在大多数情况下替代行级锁，降低系统的开销。**
-
-<img src="mysql-lock-mvcc/image-20240720235653609.png" alt="image-20240720235653609" style="zoom:33%;" />
-
-> MySQL 中，是遵循上图的处理方式，可重复读和串行化两种隔离级别，都可以解决幻读的问题。
->
-> - 如果隔离级别是可重复读，采用的是 MVCC 的方式，这是 MySQL 默认的隔离级别。
-> - 如果隔离级别是串行化，采用的是加锁的方式。
-> - **如果采用加锁的方式，使用的是间隙锁解决幻读问题。**
-
-#### 隐藏字段、undo log 版本链
-
-回顾一下 undo log 的版本链，对于使用 InnoDB 存储引擎的表来说，它的聚簇索引记录中都包含两个必要的隐藏列。
-
-1. `trx_id`：每次一个事务对某条聚簇索引记录进行改动时，都会把该事务的事务 id 赋值给 trx_id 隐藏列。
-2. `roll_pointer`：每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到 undo log 中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。
-
-举例：student 表数据如下。
-
-```mysql
-mysql> SELECT * FROM student;
-+----+--------+--------+
-| id | name   | class  |
-+----+--------+--------+
-|  1 | 张三   | 一班    |
-+----+--------+--------+
-1 row in set (0.07 sec)
-```
-
-假设插入该记录的事务 id 为 8，那么此刻该条记录的示意图如下所示：
-
-<img src="mysql-lock-mvcc/image-20240721000255201.png" alt="image-20240721000255201" style="zoom: 50%;" />
-
->**insert undo 只在事务回滚时起作用，当事务提交后，该类型的 undo log 就没用了，它占用的 Undo Log Segment 也会被系统回收（也就是该 undo log 占用的 Undo 页面链表要么被重用，要么被释放)。**
-
-假设之后两个事务 id 分别为 10、20 的事务对这条记录进行 UPDATE 操作，操作流程如下：
-
-| 发生时间顺序 | 事务 10                                        | 事务 20                                        |
-| ------------ | ---------------------------------------------- | ---------------------------------------------- |
-| 1            | BEGIN;                                         |                                                |
-| 2            |                                                | BEGIN;                                         |
-| 3            | UPDATE student SET name = "李四" WHERE id = 1; |                                                |
-| 4            | UPDATE student SET name = "王五" WHERE id = 1; |                                                |
-| 5            | COMMIT;                                        |                                                |
-| 6            |                                                | UPDATE student SET name = "钱七" WHERE id = 1; |
-| 7            |                                                | UPDATE student SET name = "宋八" WHERE id = 1; |
-| 8            |                                                | COMMIT;                                        |
-
->有人可能会想，能不能在两个事务中交叉更新同一条记录呢？
->
->答案是不能！因为这种情况，就是一个事务修改了另一个未提交事务修改过的数据，属于脏写。
->
->InnoDB 使用锁来保证不会有脏写情况的发生，也就是在第一个事务更新了某条记录后，就会给这条记录加锁，另一个事务再次更新时，就需要等待第一个事务提交了，把锁释放之后才可以继续更新。
-
-每次对记录进行改动，都会记录一条 undo log，每条 undo log 也都有一个 roll_pointer 属性（INSERT 操作对应的 undo log 没有该属性，因为 INSERT 记录没有更早的版本，它自己是起始的版本)，可以将这些 undo log 都连起来，串成一个链表：
-
-<img src="mysql-lock-mvcc/image-20240721001216698.png" alt="image-20240721001216698" style="zoom: 50%;" />
-
-对该记录每次更新后，都会将旧值放到一条 undo log 中，就算是该记录的一个旧版本，随着更新次数的增多，所有的版本都会被 roll_pointer 属性连接成一个链表，把这个链表称之为`版本链`，版本链的头节点就是当前记录最新的值。
-
-另外，每个版本中还包含生成该版本时对应的事务 id。
-
-### MVCC 实现原理之 ReadView
-
-**`MVCC 的实现依赖于：隐藏字段、undo log 版本链、ReadView。`**
-
-#### 什么是 ReadView
-
-在 MVCC 机制中，多个事务对同一个行记录进行更新会产生多个历史快照，这些历史快照保存在 undo log 里。如果一个事务想要查询这个行记录，需要读取哪个版本的行记录呢？这时就需要用到 ReadView 了，它解决了行的可见性问题。
-
-**`ReadView`**：**就是事务在使用 MVCC 机制进行快照读操作时产生的读视图。**当事务启动时，会生成数据库系统当前的一个快照，InnoDB 为每个事务构造了一个数组，用来记录并维护系统当前`活跃事务的 ID`（"活跃" 指的就是，启动了但还没提交)
-
->ReadView 和事务是一对一的关系。
-
-#### 设计思路
-
-使用 READ UNCONNMITTED 隔离级别的事务，由于可以读到未提交事务修改过的记录，所以直接读取的记录就是最新版本了。此时，不需要使用 MVCC，也就不需要 ReadView。
-
-使用 SERIALIZABLE 隔离级别的事务，InnoDB 规定使用加锁的方式来访问记录。此时，不需要使用 MVCC，也就不需要 ReadView。
-
-**使用 READ COMMITTED 和 REPEATABLE READ 隔离级别的事务，都必须保证读到已经提交了的事务修改过的记录。假如另一个事务已经修改了记录但是尚未提交，是不能直接读取最新版本的记录的，核心问题就是需要判断一下版本链中的哪个版本是当前事务可见的，这是 ReadView 要解决的主要问题。**
-
-ReadView 中主要包含 4 个比较重要的内容，分别如下：
-
-1. `creator_trx_id`：创建这个 ReadView 的事务 ID。
-2. `trx_ids`：表示在生成 ReadView 时，当前系统中活跃的读写事务的事务 id 列表。
-3. `up_limit_id`：活跃的事务中最小的事务 ID。
-4. `low_limit_id`：表示生成 ReadView 时，系统中应该分配给下一个事务的 id 值。low_limit_id 是当前系统最大的事务 id 值，这里要注意是系统中的事务 id，需要区别于正在活跃的事务 id。
-
->注意：**low_limit_id 并不是 trx_ids 中的最大值，实际上，low_limit_id 不存在于 trx_ids 中。**事务 id 是递增分配的，比如，现在有 id 为 1，2，3 这三个事务，之后 id 为 3 的事务提交了。那么一个新的读事务在生成 ReadView 时，trx_ids 就包括 1 和 2，up_limit_id 的值就是 1，low_limit_id 的值就是 4。
-
-**举例：**
-
-trx_ids 为 trx2、trx3、trx5 和 trx8 的集合，系统的最大事务 id（low_limit_id）为 trx8 + 1（如果在此之前没有其他的新增事务），活跃的最小事务 id（up_limit_id）为 trx2。
-
-<img src="mysql-lock-mvcc/image-20240721085100350.png" alt="image-20240721085100350" style="zoom:50%;" />
-
-#### ReadView 的规则
-
-有了这个 ReadView，这样在访问某条记录时，只需要按照下边的步骤判断该记录在 undo log 版本链中的某个版本是否可见：
-
-- 如果被访问版本的 trx_id 属性值`等于 ReadView 中的 creator_trx_id 值`，意味着当前事务在访问它自己修改过的记录，所以`该版本可以被当前事务访问`。
-- 如果被访问版本的 trx_id 属性值`小于 ReadView 中的 up_limit_id 值`，表明生成该版本的事务在当前事务生成 ReadView 前已经提交，所以`该版本可以被当前事务访问`。
-- 如果被访问版本的 trx_id 属性值`大于或等于 ReadView 中的 low_limit_id 值`，表明生成该版本的事务在当前事务生成 ReadView 后才开启，所以`该版本不可以被当前事务访问`。（否则会出现脏读）
-- 如果被访问版本的 trx_id 属性值`在 ReadView 的 up_limit_id 和 low_limit_id 之间`，那就需要判断一下 trx_id 属性值是不是在 trx_ids 列表中。
-  - 如果在，说明创建 ReadView 时生成该版本的事务还是活跃的，`该版本不可以被当前事务访问`。
-  - 如果不在，说明创建 ReadView 时生成该版本的事务已经被提交，`该版本可以被当前事务访问`。
-
-> 此处被访问版本，是指 undo log 版本链中的版本。 
-
-#### MVCC 整体操作流程
-
-了解了这些概念之后，来看下当查询一条记录的时候，系统如何通过 MVCC 找到它：
-
-1. 首先，获取事务自己的版本号，也就是事务 id；
-2. 获取（生成）ReadView；
-3. 查询得到的数据，然后与 ReadView 中的事务版本号进行比较；
-4. 如果不符合 ReadView 规则（当前版本不能被访问），就需要从 undo log 中获取历史快照；
-5. 最后返回符合规则的数据。
-
-**如果某个版本的数据对当前事务不可见的话，那就`顺着 undo log 版本链`找到下一个版本的数据，继续按照上边的步骤判断可见性，依此类推，直到版本链中的最后一个版本。如果最后一个版本也不可见的话，那么就意味着该条记录对该事务完全不可见，查询结果就不包含该记录。**
-
->InnoDB中，MVCC 是通过`undo log 版本链 + ReadView`进行数据读取：undo log 版本链保存了历史快照，而 ReadView 规则帮我们判断当前版本的数据是否可见。
-
-在隔离级别为`读已提交`（READ COMMITTED）时，**一个事务中的每一次 SELECT 查询都会重新获取一次 ReadView**。示例：
-
-| 事务                                 | 说明               |
-| ------------------------------------ | ------------------ |
-| BEGIN;                               |                    |
-| SELECT * FROM student WHERE id  > 2; | 获取一次 Read View |
-| …                                    |                    |
-| SELECT * FROM student WHERE id  > 2; | 获取一次 Read View |
-| COMMIT;                              |                    |
-
->注意，此时同样的查询语句都会重新获取一次 ReadView，这时如果 ReadView 不同，就可能产生不可重复读或者幻读的情况，这样符合Read Committed的规则特点。
-
-当隔离级别为`可重复读`（REPEATABLE READ）的时候，就避免了不可重复读，这是因为**一个事务只在第一次 SELECT 的时候会获取一次 ReadView，而后面所有的 SELECT 都会复用这个 ReadView**。示例：
-
-<img src="mysql-lock-mvcc/image-20240721101450225.png" alt="image-20240721101450225" style="zoom: 60%;" />
-
-### 举例说明
-
-假设现在 student 表中只有一条由事务 id 为 8 的事务插入的一条记录：
-
-```mysql
-mysql> SELECT * FROM student;
-+----+--------+--------+
-| id | name   | class  |
-+----+--------+--------+
-|  1 | 张三   | 一班    |
-+----+--------+--------+
-1 row in set (0.07 sec)
-```
-
-MVCC 只能在`READ COMMITTED`和`REPEATABLE READ`两个隔离级别下工作。接下来看一下 READ COMMITTED 和 REPEATABLE READ 所谓的生成 ReadView 的时机不同，到底不同在哪里。
-
->关于不同隔离级别下 ReadView 的事务 id，可以概括如下：
->
->- 对于 RC 隔离级别：
-> - 在一个事务中，每次查询会创建 id 为 0 的 ReadView。
-> - 一旦有修改操作，会切换到以当前事务 id 为 creator_trx_id 的新 ReadView。
->- 对于 RR 隔离级别：
-> - 在一个事务中，只有第一次的查询会创建一个 Read View。
-> - 这个 ReadView 的 creator_trx_id 就是当前的事务 id。
->
->**RR 要求整个事务的查询都要一致，所以只有第一次查询才会生成一个 ReadView。而 RC 可以在同一事务内读取不同版本的数据，所以每次修改和查询都会生成新的 ReadView。**
-
-#### READ COMMITTED 隔离级别下
-
-**`READ COMMITTED：每次读取数据前都生成一个 ReadView。`**
-
-现在有两个事务 id 分别为 10、20 的事务在执行：
-
-```mysql
-# Transaction 10
-BEGIN;
-UPDATE student SET name = "李四" WHERE id = 1;
-UPDATE student SET name = "王五" WHERE id = 1;
-
-# Transaction 20
-BEGIN;
-# 更新了一些别的表的记录 (为了分配事务 id)
-...
-```
-
-> 说明：**事务执行过程中，只有在第一次真正修改记录时（比如使用 INSERT、DELETE、UPDATE 语句），才会被分配一个单独的事务 id，这个事务 id 是递增的。**所以我们才在事务 20 中更新一些别的表的记录，目的是让它分配事务 id。
-
-此刻，表 student 中 id 为 1 的记录得到的 undo log 版本链如下所示：
-
-<img src="mysql-lock-mvcc/image-20240721102342138.png" alt="image-20240721102342138" style="zoom:67%;" />
-
-假设现在有一个使用  READ COMMITTED 隔离级别的事务开始执行：
-
-```mysql
-# 使用 READ COMMITTED 隔离级别的事务
-
-BEGIN;
-# SELECT1 操作，此时，Transaction 10 和 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值为'张三'
-```
-
-这个 SELECT1 的执行过程如下：
-
-1. 步骤一：在执行 SELECT 语句时会先生成一个 ReadView，ReadView 的 trx_ids 列表的内容就是 [10, 20]，up_limit_id 为 10，low_limit_id 为 21，creator_trx_id 为 0。
-2. 步骤二：从 undo log 版本链中挑选可见的记录，从图中看出，最新版本的列 name 的内容是 '王五'，该版本的 trx_id 值为 10，在 trx_ids 列表内（说明 ReadView 生成时，trx_id 为 10 的事务还是活跃的），所以不符合可见性要求，根据 roll_pointer 跳到下一个版本。
-3. 步骤三：下一个版本的列 name 的内容是 '李四'，该版本的 trx_id 值也为 10，也在 trx_ids 列表内，所以也不符合要求，继续跳到下一个版本。
-4. 步骤四：下一个版本的列 name 的内容是 '张三'，该版本的 trx_id 值为 8，小于 ReadView 中的 up_limit_id 值 10，所以这个版本是符合要求的，最后，返回给用户的版本就是这条列 name 为 '张三' 的记录。
-
-之后，把 事务 id 为 10 的事务提交一下：
-
-```mysql
-# Transaction 10
-BEGIN;
-
-UPDATE student SET name = "李四" WHERE id = 1;
-UPDATE student SET name = "王五" WHERE id = 1;
-
-COMMIT;
-```
-
-然后再到事务 id 为 20 的事务中，更新一下表 student 中 id 为 1 的记录：
-
-```mysql
-# Transaction 20
-BEGIN;
-
-# 更新了一些别的表的记录
-...
-UPDATE student SET name = "钱七" WHERE id = 1;
-UPDATE student SET name = "宋八" WHERE id = 1;
-```
-
-此刻，表 student 中 id 为 1 的记录的版本链就长这样：
-
-<img src="mysql-lock-mvcc/image-20240721103731212.png" alt="image-20240721103731212" style="zoom:67%;" />
-
-然后，再到刚才使用 READ COMMITTED 隔离级别的事务中继续查找这个 id 为 1 的记录，如下：
-
-```mysql
-# 使用 READ COMMITTED 隔离级别的事务
-BEGIN;
-
-# SELECT1 操作，此时，Transaction 10 和 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值为'张三'
-
-# SELECT2 操作，此时，Transaction 10 提交，Transaction 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值为'王五'
-```
-
-这个 SELECT2 的执行过程如下:
-
-1. 步骤一：在执行 SELECT 语句时会又会单独生成一个 ReadView，该 ReadView 的 trx_ids 列表的内容就是 [20]，up_limit_id 为 20，low_limit_id 为 21，creator_trx_id 为 0。
-2. 步骤二：从 undo log 版本链中挑选可见的记录，从图中看出，最新版本的列 name 的内容是 '宋八'，该版本的 trx_id 值为20，在 trx_ids 列表内，所以不符合可见性要求，根据 roll_pointer 跳到下一个版本。
-3. 步骤三：下一个版本的列 name 的内容是 '钱七'，该版本的 trx_id 值为 20，也在 trx_ids 列表内，所以也不符合要求，继续跳到下一个版本。
-4. 步骤四：下一个版本的列 name 的内容是 '王五'，该版本的 trx_id 值为 10，小于 ReadView 中的 up_limit_id 值 20，所以这个版本是符合要求的，最后，返回给用户的版本就是这条列 name 为 '王五' 的记录。
-
-以此类推，如果之后事务 id 为 20 的记录也提交了，再次在使用 READ COMMITED 隔离级别的事务中，查询表 student 中 id 值为 1 的记录时，得到的结果就是 '宋八' 了，具体流程我们就不分析了。
-
-> **强调：** 使用 READ COMMITTED 隔离级别的事务，在每次查询开始时，都会生成一个独立的 ReadView。
-
-#### REPEATABLE READ 隔离级别下
-
-**`REPEATABLE READ：只会在第一次执行查询语句时生成一个 ReadView，之后的查询就不会重复生成了，而是复用这个 ReadView。`**
-
-比如，系统里有两个事务 id 分别为 10、20 的事务在执行：
-
-```mysql
-# Transaction 10
-BEGIN;
-UPDATE student SET name = "李四" WHERE id = 1;
-UPDATE student SET name = "王五" WHERE id = 1;
-
-# Transaction 20
-BEGIN;
-# 更新了一些别的表的记录
-...
-```
-
-此刻，表 student 中 id 为 1 的记录得到的版本链表如下所示：
-
-<img src="mysql-lock-mvcc/image-20240721110043183.png" alt="image-20240721110043183" style="zoom:67%;" />
-
-假设现在有一个使用 REPEATABLE READ 隔离级别的事务开始执行：
-
-```mysql
-# 使用 REPEATABLE READ 隔离级别的事务
-BEGIN;
-
-# SELECT1 操作，此时，Transaction 10 和 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值为'张三'
-```
-
-这个 SELECT1 的执行过程如下：
-
-1. 步骤一：在执行 SELECT 语句时会先生成一个 ReadView，ReadView 的 trx_ids 列表的内容就是 [10, 20]，up_limit_id 为 10，low_limit_id 为 21，creator_trx_id 为 0。
-2. 步骤二：然后从 undo log 版本链中挑选可见的记录，从图中看出，最新版本的列 name 的内容是 '王五'，该版本的 trx_id 值为 10，在 trx_ids 列表内，所以不符合可见性要求，根据 roll_pointer 跳到下一个版本。
-3. 步骤三：下一个版本的列 name 的内容是 '李四'，该版本的 trx_id 值也为 10，也在 trx_ids 列表内，所以也不符合要求，继续跳到下一个版本。
-4. 步骤四：下一个版本的列 name 的内容是 '张三'，该版本的 trx_id 值为 8，小于 ReadView 中的 up_limit_id 值10，所以这个版本是符合要求的，最后，返回给用户的版本就是这条列 name 为 '张三 ' 的记录。
-
-之后，我们把事务 id 为 10 的事务提交一下，就像这样：
-
-```mysql
-# Transaction 10
-BEGIN;
-
-UPDATE student SET name = "李四" WHERE id = 1;
-UPDATE student SET name = "王五" WHERE id = 1;
-
-COMMIT;
-```
-
-然后，再到事务 id 为 20 的事务中更新一下表 student 中 id 为 1 的记录：
-
-```mysql
-# Transaction 20
-BEGIN;
-
-# 更新了一些别的表的记录
-...
-UPDATE student SET name = "钱七" WHERE id = 1;
-UPDATE student SET name = "宋八" WHERE id = 1;
-```
-
-此刻，表 student 中 id 为 1 的记录的版本链长这样：
-
-<img src="mysql-lock-mvcc/image-20240721110539834.png" alt="image-20240721110539834" style="zoom:67%;" />
-
-然后，再到刚才使用 REPEATABLE READ 隔离级别的事务中继续查找这个id 为 1 的记录，如下：
-
-```mysql
-# 使用 REPEATABLE READ 隔离级别的事务
-BEGIN;
-
-# SELECT1 操作，此时，Transaction 10 和 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值为'张三'
-
-# SELECT2 操作，此时，Transaction 10 提交，Transaction 20 未提交
-SELECT * FROM student WHERE id = 1; # 得到的列 name 的值仍为'张三'
-```
-
-SELECT2 的执行过程如下:
-
-1. 步骤一：因为当前事务的隔离级别为 REPEATABLE READ，而之前在执行 SELECT1 时已经生成过 ReadView 了，所以此时直接复用之前的 ReadView，之前的 ReadView 的 trx_ids 列表的内容就是 [10, 20]，up_limit_id 为 10，low_limit_id 为 21，creator_trx_id 为 0。
-2. 步骤二：然后从 undo log 版本链中挑选可见的记录，从图中可以看出，最新版本的列 name 的内容是 '宋八'，该版本的 trx_id 值为 20，在 trx_ids 列表内，所以不符合可见性要求，根据 roll_pointer 跳到下一个版本。
-3. 步骤三：下一个版本的列 name 的内容是 '钱七'，该版本的 trx_id 值为 20，也在 trx_ids 列表内，所以也不符合要求，继续跳到下一个版本。
-4. 步骤四：下一个版本的列 name 的内容是 '王五'，该版本的 trx_id 值为 10，而 trx_ids 列表中是包含值为 10 的事务 id 的，所以该版本也不符合要求。同理，下一个列 name 的内容是 '李四' 的版本也不符合要求，继续跳到下一个版本。
-5. 步骤五：下一个版本的列 name 的内容是 '张三'，该版本的 trx_id 值为 8，小于 ReadView 中的 up_limit_id 值 10，所以这个版本是符合要求的，最后，返回给用户的版本就是这条列 name 为 '张三' 的记录。
-
-两次 SELECT 查询得到的结果是重复的，记录的列 name 值都是 '张三'，这就是可重复读的含义。如果我们之后再把事务 id 为 20 的记录提交了，然后再到刚才使用 REPEATABLE READ 隔离级别的事务中，继续查找这个 id 为 1 的记录，得到的结果还是 '张三'，具体执行过程大家可以自己分析一下。
-
-#### 如何解决幻读
-
-接下来说明 InnoDB 是如何解决幻读的。
-
-假设现在表 student 中只有一条数据，数据内容中，主键 id = 1，隐藏的 trx_id = 10，它的 undo log 如下图所示：
-
-<img src="mysql-lock-mvcc/image-20240721120852189.png" alt="image-20240721120852189" style="zoom:33%;" />
-
-假设现在有事务 A 和事务 B 并发执行，事务 A 的事务 id 为 20，事务 B 的事务 id 为 30。
-
-步骤一：事务 A 开始第一次查询数据，查询的 SQL 语句如下。
-
-```mysql
-SELECT * FROM student WHERE id >= 1;
-```
-
-在开始查询之前，MySQL 会为事务 A 产生一个 ReadView，此时 ReadView 的内容如下：trx_ids = [20, 30]，up_limit_id = 20，low_limit_id = 31，creator_trx_id = 20。
-
-由于此时表 student 中只有一条数据，且符合 WHERE id >= 1 条件，因此会查询出来。然后根据 ReadView机制，发现该行数据的 trx_id = 10，小于事务 A 的 ReadView 里 up_limit_id，这表示这条数据是事务 A 开启之前，其他事务就已经提交了的数据，因此事务 A 可以读取到。
-
-结论：事务 A 的第一次查询，能读取到一条数据，id = 1。
-
-步骤二：接着事务 B，往表 student 中新插入两条数据，并提交事务。
-
-```mysql
-INSERT INTO student(id, name) VALUES(2, '李四');
-INSERT INTO student(id, name) VALUES(3, '王五');
-```
-
-此时，表 student 中就有三条数据了，对应的 undo log 如下图所示：
-
-<img src="mysql-lock-mvcc/image-20240721121549931.png" alt="image-20240721121549931" style="zoom:50%;" />
-
-步骤三：接着事务 A 开启第二次查询，根据可重复读隔离级别的规则，此时事务 A 并不会再重新生成 ReadView。此时表 student 中的 3 条数据都满足 WHERE id >= 1 的条件，因此会先查出来。然后根据 ReadView 机制，判断每条数据是不是都可以被事务 A 看到。
-
-1. 首先 id = 1 的这条数据，前面已经说过了，可以被事务 A 看到。
-2. 然后是 id = 2 的数据，它的 trx_id = 30，此时事务 A 发现，这个值处于 up_limit_id 和 low_limit_id 之间，因此还需要再判断 30 是否处于 trx_ids 数组内。由于事务 A 的 trx_ids = [20, 30]，因此在数组内，这表示 id = 2 的这条数据是与事务 A 在同一时刻启动的其他事务提交的，所以这条数据不能让事务 A 看到。
-3. 同理，id = 3 的这条数据，trx_id 也为 30，因此也不能被事务 A 看见。
-
-如下图所示：
-
-<img src="mysql-lock-mvcc/image-20240721122343548.png" alt="image-20240721122343548" style="zoom:50%;" />
-
-结论：最终事务 A 的第二次查询，只能查询出 id = 1 的这条数据，这和事务 A 的第一次查询的结果是一样的，因此没有出现幻读现象，所以说在 MySQL 的可重复读隔离级别下，不存在幻读问题。
-
-### 总结
-
-这里介绍了 MVCC 在 READ COMMITTD、REPEATABLE READ 这两种隔离级别的事务，在执行快照读操作时访问记录的版本链的过程。这样使不同事务的读-写、写-读操作并发执行，从而提升系统性能
-
-核心点在于 ReadView 的原理，READ COMMITTD、REPEATABLE READ 这两个隔离级别的一个很大不同就是生成 ReadView 的时机不同：
-
-- READ COMMITTD 在每一次进行普通 SELECT 操作前，都会生成一个ReadView。
-- REPEATABLE READ 只在第一次进行普通 SELECT 操作前生成一个 ReadView，之后的查询操作都重复使用这个 ReadView。
-
->说明：之前说执行 DELETE 语句或者更新主键的 UPDATE 语句，并不会立即把对应的记录完全从页面中删除，而是执行一个所谓的`delete mark`操作（标记 0 -> 1），相当于只是对记录打上了一个删除标志位，这主要就是为 MVCC 服务的。另外后面回滚也可能用到这个 delete mark。
-
-通过 MVCC 可以解决：
-
-- `读写之间阻塞的问题`：通过 MVCC 可以让读写互相不阻塞，即读不阻塞写，写不阻塞读，这样就可以提升事务并发处理能力。
-- `降低了死锁的概率`：这是因为 MVCC 采用了乐观锁的方式，读取数据时并不需要加锁，对于写操作，也只锁定必要的行。
-- `解决快照读的问题`：当查询数据库在某个时间点的快照时，只能看到这个时间点之前事务提交更新的结果，而不能看到这个时间点之后事务提交的更新结果。
 
 ## 原文链接
 
