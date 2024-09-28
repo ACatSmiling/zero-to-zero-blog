@@ -1,6 +1,6 @@
->`Author: ACatSmiling`
+﻿>*`Author: ACatSmiling`*
 >
->`Since: 2024-09-05`
+>*`Since: 2024-09-05`*
 
 ## 文件与目录结构
 
@@ -8,7 +8,7 @@
 
 Linux 目录结构：
 
-<img src="linux-command/image-20240811204959913.png" alt="image-20240811204959913" style="zoom:80%;" />
+![image-20240811204959913](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235449960-630414707.png)
 
 ```shell
 [zeloud@localhost ~]$ cd /
@@ -50,7 +50,7 @@ vim 编辑器是从 vi 发展出来的一个新能更强大的文本编辑器，
 
 ### 模式间转换
 
-<img src="linux-command/image-20240811233221781.png" alt="image-20240811233221781" style="zoom:70%;" />
+![image-20240811233221781](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235449633-2028948271.png)
 
 > 如果环境是 Minimal Install 安装时，需要自行安装 vim：
 >
@@ -82,7 +82,7 @@ vim 编辑器是从 vi 发展出来的一个新能更强大的文本编辑器，
 
 ### 命令大全
 
-<img src="linux-command/image-20240812153538200.png" alt="image-20240812153538200" style="zoom:70%;" />
+![image-20240812153538200](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235449176-135743257.png)
 
 一般模式：
 
@@ -170,7 +170,7 @@ vim 编辑器是从 vi 发展出来的一个新能更强大的文本编辑器，
 > IPv4 地址 . . . . . . . . . . . . : 192.168.1.25
 > 子网掩码  . . . . . . . . . . . . : 255.255.255.0
 > 默认网关. . . . . . . . . . . . . : fe80::1%36
->                                     192.168.1.1
+>                                  192.168.1.1
 > 
 > 无线局域网适配器 本地连接* 1:
 > 
@@ -303,7 +303,7 @@ bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  s
 
 除了使用 cmd 远程登录，常用的是使用远程连接工具，推荐使用`WindTerm`：
 
-![image-20240813005002545](linux-command/image-20240813005002545.png)
+![image-20240813005002545](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235448718-1620166464.png)
 
 ## 系统管理
 
@@ -375,7 +375,7 @@ drwxr-xr-x.  2 root root    67 Aug 11 15:55 basic.target.wants
 
 查看状态可知，network 是 active (exited)，而 NetworkManager 是 active (running)。在 CentOS 7 中，应该只运行 NetworkManager，而关闭 network（root 权限处理）：
 
-<img src="linux-command/image-20240813160437614.png" alt="image-20240813160437614" style="zoom:80%;" />
+![image-20240813160437614](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235448322-1283925602.png)
 
 - systemctl stop network，只对当前连接有效，虚拟机重启后，network 还会开启。
 - 以上处理过程，可以作为虚拟机网络异常的检查方式之一。
@@ -384,7 +384,7 @@ drwxr-xr-x.  2 root root    67 Aug 11 15:55 basic.target.wants
 
 Linux 系统开机启动过程：
 
-<img src="linux-command/image-20240813204608356.png" alt="image-20240813204608356" style="zoom:80%;" />
+![image-20240813204608356](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235447988-592543852.png)
 
 CentOS 6 中有 7 种系统运行级别（runlevel），常用的运行级别是 3 和 5：
 
@@ -519,12 +519,12 @@ Created symlink from /etc/systemd/system/network-online.target.wants/NetworkMana
 > [root@centos zeloud]# chkconfig --list
 > 
 > Note: This output shows SysV services only and does not include native
->    systemd services. SysV configuration data might be overridden by native
->    systemd configuration.
+> systemd services. SysV configuration data might be overridden by native
+> systemd configuration.
 > 
->    If you want to list systemd services use 'systemctl list-unit-files'.
->    To see services enabled on particular target use
->    'systemctl list-dependencies [target]'.
+> If you want to list systemd services use 'systemctl list-unit-files'.
+> To see services enabled on particular target use
+> 'systemctl list-dependencies [target]'.
 > 
 > netconsole      0:off   1:off   2:off   3:off   4:off   5:off   6:off
 > network         0:off   1:off   2:on    3:on    4:on    5:on    6:off
@@ -534,12 +534,12 @@ Created symlink from /etc/systemd/system/network-online.target.wants/NetworkMana
 > [root@centos zeloud]# chkconfig --list
 > 
 > Note: This output shows SysV services only and does not include native
->    systemd services. SysV configuration data might be overridden by native
->    systemd configuration.
+> systemd services. SysV configuration data might be overridden by native
+> systemd configuration.
 > 
->    If you want to list systemd services use 'systemctl list-unit-files'.
->    To see services enabled on particular target use
->    'systemctl list-dependencies [target]'.
+> If you want to list systemd services use 'systemctl list-unit-files'.
+> To see services enabled on particular target use
+> 'systemctl list-dependencies [target]'.
 > 
 > netconsole      0:off   1:off   2:off   3:off   4:off   5:off   6:off
 > network         0:off   1:off   2:off   3:off   4:off   5:off   6:off
@@ -549,12 +549,12 @@ Created symlink from /etc/systemd/system/network-online.target.wants/NetworkMana
 > [root@centos zeloud]# chkconfig --list
 > 
 > Note: This output shows SysV services only and does not include native
->    systemd services. SysV configuration data might be overridden by native
->    systemd configuration.
+> systemd services. SysV configuration data might be overridden by native
+> systemd configuration.
 > 
->    If you want to list systemd services use 'systemctl list-unit-files'.
->    To see services enabled on particular target use
->    'systemctl list-dependencies [target]'.
+> If you want to list systemd services use 'systemctl list-unit-files'.
+> To see services enabled on particular target use
+> 'systemctl list-dependencies [target]'.
 > 
 > netconsole      0:off   1:off   2:off   3:off   4:off   5:off   6:off
 > network         0:off   1:off   2:on    3:on    4:on    5:on    6:off
@@ -1725,7 +1725,7 @@ $ vi /etc/sudoers
 
 >除了对用户设置 sudo，`属于 wheel 用户组的用户`，都拥有 root 权限：
 >
-><img src="linux-command/image-20240815235412653.png" alt="image-20240815235412653" style="zoom:80%;" />
+>![image-20240815235412653](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235447669-2050756038.png)
 
 功能描述：设置普通用户具有 root 权限。
 
@@ -2035,7 +2035,7 @@ Linux 系统是一种典型的多用户系统，不同的用户处于不同的�
 
 `文件基本属性`：
 
-<img src="linux-command/image-20240816210459134.png" alt="image-20240816210459134" style="zoom: 67%;" />
+![image-20240816210459134](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235447312-926367318.png)
 
 - 如果查看到的时文件：链接数指的是当前文件硬链接的个数。当硬链接数量为 0 时，表示这个文件被真正删除。
 
@@ -2061,7 +2061,7 @@ Linux 系统是一种典型的多用户系统，不同的用户处于不同的�
 
 `文件类型和权限属性`：
 
-<img src="linux-command/image-20240815235856131.png" alt="image-20240815235856131" style="zoom: 67%;" />
+![image-20240815235856131](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235446946-1471308330.png)
 
 使用从左到右的 10 个字符表示不同的权限，如果某一项没有权限，就会使用`-`。0 ~ 9 这些数字的含义是：
 
@@ -2106,7 +2106,7 @@ drwxr-xr-x. 4 root root          80 Aug 16 20:16 cpu # 块设备
 
 基本语法：
 
-<img src="linux-command/image-20240816211405462.png" alt="image-20240816211405462" style="zoom:67%;" />
+![image-20240816211405462](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235446514-637266792.png)
 
 第一种方式变更权限：
 
@@ -2885,41 +2885,41 @@ sr0
 >
 >- 如果是 IDE 硬盘，对应的硬盘名称是 hd。
 >
-> - 第一块硬盘叫 hda，第二块硬盘叫 hdb，以此类推。
+>- 第一块硬盘叫 hda，第二块硬盘叫 hdb，以此类推。
 >
 >- 如果是 SATA 或 SCSI 硬盘，对应的硬盘名称是 sd。
 >
-> - 第一块硬盘叫 sda（sda 的三个分区，叫 sda1、sda2 和 sda3），第二块硬盘叫 sdb，以此类推。
+>- 第一块硬盘叫 sda（sda 的三个分区，叫 sda1、sda2 和 sda3），第二块硬盘叫 sdb，以此类推。
 >
 >- 如果是虚拟硬盘，对应的硬盘名称是 hd。例如，阿里云服务器：
 >
-> ```shell
-> ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:~$ lsblk
-> NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-> loop0    7:0    0 63.9M  1 loop /snap/core20/2264
-> loop1    7:1    0 63.9M  1 loop /snap/core20/2318
-> loop2    7:2    0 38.7M  1 loop /snap/snapd/21465
-> loop3    7:3    0 38.8M  1 loop /snap/snapd/21759
-> loop4    7:4    0   87M  1 loop /snap/lxd/29351
-> loop6    7:6    0   87M  1 loop /snap/lxd/28373
-> vda    252:0    0   40G  0 disk 
-> ├─vda1 252:1    0    1M  0 part 
-> ├─vda2 252:2    0  200M  0 part /boot/efi
-> └─vda3 252:3    0 39.8G  0 part /
+>```shell
+>ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:~$ lsblk
+>NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+>loop0    7:0    0 63.9M  1 loop /snap/core20/2264
+>loop1    7:1    0 63.9M  1 loop /snap/core20/2318
+>loop2    7:2    0 38.7M  1 loop /snap/snapd/21465
+>loop3    7:3    0 38.8M  1 loop /snap/snapd/21759
+>loop4    7:4    0   87M  1 loop /snap/lxd/29351
+>loop6    7:6    0   87M  1 loop /snap/lxd/28373
+>vda    252:0    0   40G  0 disk 
+>├─vda1 252:1    0    1M  0 part 
+>├─vda2 252:2    0  200M  0 part /boot/efi
+>└─vda3 252:3    0 39.8G  0 part /
 >
-> ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:~$ lsblk -f
-> NAME   FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
-> loop0                                                                0   100% /snap/core20/2264
-> loop1                                                                0   100% /snap/core20/2318
-> loop2                                                                0   100% /snap/snapd/21465
-> loop3                                                                0   100% /snap/snapd/21759
-> loop4                                                                0   100% /snap/lxd/29351
-> loop6                                                                0   100% /snap/lxd/28373
-> vda                                                                           
-> ├─vda1                                                                        
-> ├─vda2 vfat   FAT32       4AF1-C98F                             190.8M     3% /boot/efi
-> └─vda3 ext4   1.0         934de084-0e04-434a-a546-6f1b8450a996   33.7G     9% /
-> ```
+>ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:~$ lsblk -f
+>NAME   FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+>loop0                                                                0   100% /snap/core20/2264
+>loop1                                                                0   100% /snap/core20/2318
+>loop2                                                                0   100% /snap/snapd/21465
+>loop3                                                                0   100% /snap/snapd/21759
+>loop4                                                                0   100% /snap/lxd/29351
+>loop6                                                                0   100% /snap/lxd/28373
+>vda                                                                           
+>├─vda1                                                                        
+>├─vda2 vfat   FAT32       4AF1-C98F                             190.8M     3% /boot/efi
+>└─vda3 ext4   1.0         934de084-0e04-434a-a546-6f1b8450a996   33.7G     9% /
+>```
 
 #### mount/umount
 

@@ -1,6 +1,6 @@
->`Author: ACatSmiling`
+﻿>*`Author: ACatSmiling`*
 >
->`Since: 2024-09-02`
+>*`Since: 2024-09-02`*
 
 ## CentOS 安装
 
@@ -10,7 +10,7 @@
 
 目前，最新版本为 CentOS Stream 9：
 
-<img src="linux-install/image-20240809232431749.png" alt="image-20240809232431749" style="zoom:67%;" />
+![image-20240809232431749](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235436440-533679494.png)
 
 本文以 CentOS 7 为例，下载页拉到下面，选择旧版本安装。
 
@@ -20,105 +20,105 @@
 
 进入[旧版本下载页面](http://wiki.centos.org/Download)：
 
-![image-20240810192403243](linux-install/image-20240810192403243.png)
+![image-20240810192403243](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235436135-237088600.png)
 
 进入[镜像下载地址](https://www.centos.org/download/mirrors)：
 
-![image-20240810192934661](linux-install/image-20240810192934661.png)
+![image-20240810192934661](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235435580-189568098.png)
 
 进入[镜像列表](https://mirrormanager.fedoraproject.org/mirrors/CentOS)，选择中国区的镜像：
 
-<img src="linux-install/image-20240810193044573.png" alt="image-20240810193044573" style="zoom: 80%;" />
+![image-20240810193044573](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235434855-333123301.png)
 
 此处，选择 [Tencent 的镜像](mirrors.tencent.com)，然后选择 [CentOS 7.9 版本](https://mirrors.cloud.tencent.com/centos/7.9.2009/)：
 
-![image-20240810231332578](linux-install/image-20240810231332578.png)
+![image-20240810231332578](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235434532-1009229106.png)
 
-![image-20240810231404187](linux-install/image-20240810231404187.png)
+![image-20240810231404187](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235434186-1344236151.png)
 
 ### Hyper-V 虚拟机安装
 
 打开控制面板，找到程序`启用或关闭 Windows 功能`，开启 Hyper-V：
 
-<img src="linux-install/image-20240902213506399.png" alt="image-20240902213506399" style="zoom: 80%;" />
+![image-20240902213506399](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235433898-1256570059.png)
 
 win + R 快捷键，输入`virtmgmt.msc`，打开 Hyper-V 管理器，新建虚拟机：
 
-<img src="linux-install/image-20240810232300618.png" alt="image-20240810232300618" style="zoom: 80%;" />
+![image-20240810232300618](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235433588-568456428.png)
 
-<img src="linux-install/image-20240810232628638.png" alt="image-20240810232628638" style="zoom:80%;" />
+![image-20240810232628638](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235433273-531155204.png)
 
-<img src="linux-install/image-20240810232655989.png" alt="image-20240810232655989" style="zoom:80%;" />
+![image-20240810232655989](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235432942-1883301614.png)
 
-<img src="linux-install/image-20240810232712363.png" alt="image-20240810232712363" style="zoom:80%;" />
+![image-20240810232712363](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235432642-2083828793.png)
 
-<img src="linux-install/image-20240810232808392.png" alt="image-20240810232808392" style="zoom:80%;" />
+![image-20240810232808392](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235432301-425925797.png)
 
-<img src="linux-install/image-20240810232854591.png" alt="image-20240810232854591" style="zoom:80%;" />
+![image-20240810232854591](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235431984-1291614624.png)
 
 在启动新建的虚拟机之前，进行额外设置：
 
-<img src="linux-install/image-20240810233111225.png" alt="image-20240810233111225" style="zoom: 80%;" />
+![image-20240810233111225](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235431578-401358135.png)
 
-<img src="linux-install/image-20240810233140916.png" alt="image-20240810233140916" style="zoom:80%;" />
+![image-20240810233140916](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235431239-844655483.png)
 
-<img src="linux-install/image-20240810233236380.png" alt="image-20240810233236380" style="zoom:80%;" />
+![image-20240810233236380](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235430854-1045053923.png)
 
-<img src="linux-install/image-20240810233334324.png" alt="image-20240810233334324" style="zoom:80%;" />
+![image-20240810233334324](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235430505-2142573771.png)
 
 > 虚拟交换机 LAN1：
 >
-> <img src="linux-install/image-20240810233544839.png" alt="image-20240810233544839" style="zoom:80%;" />
+> ![image-20240810233544839](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235430155-1716607161.png)
 >
-> <img src="linux-install/image-20240810233601103.png" alt="image-20240810233601103" style="zoom:80%;" />
+> ![image-20240810233601103](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235429842-533151995.png)
 
 现在，启动虚拟机，并连接虚拟机，然后进行 CentOS 7.9 的安装：
 
-<img src="linux-install/image-20240810233702440.png" alt="image-20240810233702440" style="zoom:80%;" />
+![image-20240810233702440](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235429485-251371452.png)
 
-<img src="linux-install/image-20240810233805639.png" alt="image-20240810233805639" style="zoom:80%;" />
+![image-20240810233805639](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235429167-1600767434.png)
 
 安装选项首页面：
 
-<img src="linux-install/image-20240811093656974.png" alt="image-20240811093656974" style="zoom:80%;" />
+![image-20240811093656974](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235428770-1871735155.png)
 
 日期和时间设置：
 
-<img src="linux-install/image-20240811002148179.png" alt="image-20240811002148179" style="zoom:80%;" />
+![image-20240811002148179](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235428407-543478523.png)
 
 软件选择设置：
 
-<img src="linux-install/image-20240811002246815.png" alt="image-20240811002246815" style="zoom:80%;" />
+![image-20240811002246815](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235427992-611712051.png)
 
 安装位置设置：
 
-<img src="linux-install/image-20240811151656610.png" alt="image-20240811151656610" style="zoom:80%;" />
+![image-20240811151656610](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235427640-1985531705.png)
 
-<img src="linux-install/image-20240811152413706.png" alt="image-20240811152413706" style="zoom:80%;" />
+![image-20240811152413706](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235427277-147638354.png)
 
-<img src="linux-install/image-20240811152836151.png" alt="image-20240811152836151" style="zoom:80%;" />
+![image-20240811152836151](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235426930-547018808.png)
 
-<img src="linux-install/image-20240811153221227.png" alt="image-20240811153221227" style="zoom:80%;" />
+![image-20240811153221227](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235426544-546942148.png)
 
 >如果按上述配置完成后，提示如下 Configuration Error，则将引导分区的挂载点修改为：/boot/efi。
 >
-><img src="linux-install/image-20240811154512798.png" alt="image-20240811154512798" style="zoom:80%;" />
+>![image-20240811154512798](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235426229-1522424456.png)
 
 KDUMP 设置：（Kdump 是一个内核崩溃转储机制。在系统崩溃的时候，kdump 将捕获系统信息，这对于诊断崩溃的原因非常有用。注意，kdump 需要预留一部分系统内存，且这部分内存对于其他用户是不可用的）
 
-<img src="linux-install/image-20240811154935352.png" alt="image-20240811154935352" style="zoom:80%;" />
+![image-20240811154935352](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235425837-1534221601.png)
 
 网络和主机名设置：（网络和主机名，在虚拟机安装完成后，也可以通过命令行设置）
 
-<img src="linux-install/image-20240811155349951.png" alt="image-20240811155349951" style="zoom:80%;" />
+![image-20240811155349951](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235425498-652013531.png)
 
 配置完成后，点击开始安装：
 
-<img src="linux-install/image-20240811155720123.png" alt="image-20240811155720123" style="zoom:80%;" />
+![image-20240811155720123](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235425031-215434176.png)
 
 等待安装完成，然后重启虚拟机。
 
-## 初始化
+## CentOS 初始化
 
 ### 设置静态 IP
 
@@ -185,7 +185,7 @@ $ vi /etc/hosts
 
 到镜像地址下载源文件，再手动上传到服务器：
 
-![image-20240817152143079](linux-install/image-20240817152143079.png)
+![image-20240817152143079](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928235424438-2059639298.png)
 
 - 阿里云镜像：http://mirrors.aliyun.com/repo/CentOS-7.repo
 - 网易 163 镜像：http://mirrors.163.com/.help/CentOS7-Base-163.repo
