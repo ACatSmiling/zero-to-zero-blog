@@ -1,10 +1,10 @@
->*`Author: ACatSmiling`*
+﻿>*`Author: ACatSmiling`*
 >
 >*`Since: 2024-09-27`*
 
 Python 中的数据类型：
 
-![1727533931777](python-series-02-data-structures/1727533931777.jpg)
+![1727533931777](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928234347955-1827235969.jpg)
 
 ## 数值类型
 
@@ -207,7 +207,7 @@ print(len(my_list))  # 5
 
 列表的方法：
 
-![1727537598738](python-series-02-data-structures/1727537598738.jpg)
+![1727537598738](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928234347618-371881159.jpg)
 
 示例：
 
@@ -628,7 +628,7 @@ print(a)  # abcabcabcabcabc
 
 可以使用`索引`获取一个字符串中 指定位置的字符，索引计数从 0 开始。
 
-![1727535125786](python-series-02-data-structures/1727535125786.jpg)
+![1727535125786](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928234347080-22780188.jpg)
 
 示例：
 

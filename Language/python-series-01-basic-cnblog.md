@@ -1,4 +1,4 @@
-> *`Author: ACatSmiling`*
+﻿> *`Author: ACatSmiling`*
 >
 > *`Since: 2024-09-27`*
 
@@ -240,7 +240,7 @@ print('你的出生年份是%d'% (year - age))
 
 - 标识符**不能是 Python 中的关键字和保留字**，也不建议使用 Python 中的函数名作为标识符，因为这样会导致函数被覆盖。
 
-  ![image-20240928091427597](python-series-01-basic/image-20240928091427597.png)
+  ![image-20240928091427597](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928144548934-538602746.png)
 
 - 在 Python 中注意遵循两种命名规范：
   - `下划线命名法`：所有字母小写，单词之间使用 _ 分割。如：max_length、min_length、hello_world。

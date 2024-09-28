@@ -1,4 +1,4 @@
->*`Author: ACatSmiling`*
+﻿>*`Author: ACatSmiling`*
 >
 >*`Since: 2024-09-27`*
 
@@ -124,7 +124,7 @@ else:
 
 ### 嵌套选择
 
-![image-20240928192517659](python-series-03-process-control/image-20240928192517659.png)
+![image-20240928192517659](https://img2023.cnblogs.com/blog/3488201/202409/3488201-20240928234403964-1358167228.png)
 
 ### match
 
