@@ -67,7 +67,7 @@ Python 是一门面向对象的编程语言。所谓的面向对象的语言，�
 
 - 使用类创建对象的流程：
 
-  <img src="python-series-05-oop/image-20210926155702330.png" alt="image-20210926155702330" style="zoom:80%;" />
+  ![image-20210926155702330](python-series-06-oop/image-20210926155702330.png)
 
   - 第一步：创建一个变量。
   - 第二步：在内存中创建一个新对象。
@@ -1176,11 +1176,11 @@ print(test.__name__)  # 引入的外部模块：test_module
 
 结构：
 
-![image-20210929171722079](python-series-05-oop/image-20210929171722079.png)
+![image-20210929171722079](python-series-06-oop/image-20210929171722079.png)
 
-![image-20210929171809531](python-series-05-oop/image-20210929171809531.png)
+![image-20210929171809531](python-series-06-oop/image-20210929171809531.png)
 
-![image-20210929171835707](python-series-05-oop/image-20210929171835707.png)
+![image-20210929171835707](python-series-06-oop/image-20210929171835707.png)
 
 - `hello/__init__.py`：
 
@@ -1304,7 +1304,7 @@ os.system('notepad')  # 打开记事本命令
 > ['main.py', 'aaa', 'bbb']
 > ```
 
-![image-20210930161242203](python-series-05-oop/image-20210930161242203.png)
+![image-20210930161242203](python-series-06-oop/image-20210930161242203.png)
 
 
 

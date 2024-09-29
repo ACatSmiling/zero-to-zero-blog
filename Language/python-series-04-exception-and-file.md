@@ -12,7 +12,7 @@
 
 程序运行时出现异常，目的并不是让我们的程序直接终止！Python 是希望在出现异常时，我们可以编写代码来对异常进行处理！
 
-**`try 语句`**：
+**`try-except-finally 语句`**：
 
 ```python
 try:
@@ -29,7 +29,7 @@ finally:
     代码块（该代码块总会执行）
 ```
 
-- try 是必须的，else 语句有没有都行，except 和 finally 至少有一个。
+- **try 是必须的，else 语句有没有都行，except 和 finally 至少有一个。**
 
 - 可以将可能出错的代码放入到 try 语句，这样如果代码没有错误，则会正常执行，如果出现错误，则会执行 expect 子句中的代码，这样我们就可以通过代码来处理异常，避免因为一个异常导致整个程序的终止。
 
@@ -37,11 +37,7 @@ finally:
 
 当在函数中出现异常时，如果在函数中对异常进行了处理，则异常不会再继续传播，如果函数中没有对异常进行处理，则异常会继续向函数调用处传播，如果函数调用处处理了异常，则不再传播，如果没有处理则继续向调用处传播，直到传递到全局作用域（主模块），如果依然没有处理，则程序终止，并且显示异常信息。
 
-当程序运行过程中出现异常以后，所有的异常信息会被保存一个专门的异常对象中，而异常传播时，实际上就是异常对象抛给了调用处。比如：
-
-- **ZeroDivisionError 类的对象专门用来表示除 0 的异常。**
-- **NameError 类的对象专门用来处理变量错误的异常。**
-- 在 Python 为我们提供了多个异常对象。
+当程序运行过程中出现异常以后，所有的异常信息会被保存一个专门的异常对象中，而异常传播时，实际上就是异常对象抛给了调用处。
 
 示例：
 
@@ -66,6 +62,22 @@ fn3()
 ```
 
 ### 异常对象
+
+Python 中常见的异常类型：
+
+| 报错类型          | 描述                                           |
+| ----------------- | ---------------------------------------------- |
+| AssertionError    | 当 assert 断言条件为假的时候抛出的异常         |
+| AttributeError    | 当访问的对象属性不存在的时候抛出的异常         |
+| IndexError        | 超出对象索引的范围时抛出的异常                 |
+| KeyError          | 在字典中查找一个不存在的 key 抛出的异常        |
+| NameError         | 访问一个不存在的变量时抛出的异常               |
+| OSError           | 操作系统产生的异常                             |
+| SyntaxError       | 语法错误时会抛出此异常                         |
+| TypeError         | 类型错误，通常是不同类型之间的操作会出现此异常 |
+| ZeroDivisionError | 进行数学运算时除数为 0 时会出现此异常          |
+
+示例：
 
 ```python
 print('异常出现前')
@@ -95,7 +107,7 @@ print('异常出现后')
 
 ### 抛出异常
 
-可以使用`raise 语句`来抛出异常，raise 语句后需要跟一个异常类或异常的实例。
+可以使用`raise 语句`来手动抛出异常，raise 语句后需要跟一个异常类或异常的实例。
 
 示例：
 
@@ -123,9 +135,12 @@ print(add(-123, 456))
 
 ## 文件
 
-通过 Python 程序来对计算机中的各种文件进行增删改查的操作。
+文件是以计算机硬盘为载体存储在计算机上的信息集合，文件可以是文本文档、图片、程序等等。计算机文件基本上分为二种：二进制文件和纯文本文件。
 
-操作文件的步骤：
+- `二进制文件`：**没有统一的字符编码。**与文本文件的一个最主要的区别在于是否有统一的字符编码格式，二进制文件顾名思义是直接由 0 与 1 组成，无统一的字符编码，例如图片文件（jpg、png），视频文件（avi）等。
+- `纯文本文件`：**有统一的编码，可以被看做存储在磁盘上的长字符串。**编码格式常见的有 ASCII、ISO-8859-1、GB2312、GBK、UTF-8、UTF-16 等。
+
+通过 Python 程序，操作文件的步骤：
 
 - 打开文件。
 - 对文件进行各种操作（读、写），然后保存。
@@ -133,19 +148,38 @@ print(add(-123, 456))
 
 ### 打开文件
 
-```python
-# open(file, mode='r', buffering=-1, encoding_=None, errors=None, newline=None, closefd=True, opener=None)
-# 使用 open() 函数来打开一个文件
-# 参数：
-#   file 要打开的文件的名字（路径）
-# 返回值：
-#   返回一个对象，这个对象就代表了当前打开的文件
+**`open()`**：打开一个文件。
 
+语法：
+
+```python
+open(file, mode='r', buffering=-1, encoding_=None, errors=None, newline=None, closefd=True, opener=None)
+```
+
+- `file`：要打开的文件的名字（路径）。
+
+- `mode`：打开文件的模式。
+
+  | mode   | 解释                                                         |
+  | ------ | ------------------------------------------------------------ |
+  | **r**  | 只读，默认模式，文件必须存在，不存在则抛出异常               |
+  | **w**  | 只写，写之前会清空文件的内容，如果文件不存在，会创建新文件   |
+  | **a**  | 追加的方式，在原本内容中继续写，如果文件不存在，则会创建新文件 |
+  | **r+** | 可读可写                                                     |
+  | **w+** | 打开一个文件用于读写。如果该文件已存在则将其覆盖。如果该文件不存在，创建新文件。 |
+  | **a+** | 打开一个文件用于读写。如果该文件已存在，文件指针将会放在文件的结尾。文件打开时会是追加模式。如果该文件不存在，创建新文件用于读写 |
+  | **b**  | rb、wb、ab、rb+、wb+、ab+ 意义和上面一样，用于二进制文件操作 |
+
+- 返回值：返回一个对象，这个对象就代表了当前打开的文件。
+
+示例：
+
+```python
 # 创建一个变量，来保存文件的名字
 # 如果目标文件和当前文件在同一级目录下，则直接使用文件名即可
 file_name = 'demo.txt'
 
-# 在 windows 系统使用路径时，可以使用 / 来代替 \
+# 在 Windows 系统使用路径时，可以使用 / 来代替 \
 # 或者可以使用 \\ 来代替 \
 # 或者也可以使用原始字符串
 # file_name = 'hello\\demo.txt'
@@ -425,6 +459,159 @@ os.rename('hello', 'bb.txt')
 # os.rename('bb.txt', 'c:/users/lilichao/desktop/bb.txt')
 
 pprint(r)
+```
+
+### csv 文件
+
+```python
+import csv, random
+from my_package import my_tools
+
+lista = []
+
+
+def random_info(n=100):
+    subjects = ['python', 'java', 'C++', 'html']
+    names = []
+    for i in range(n // len(subjects)):
+        name = my_tools.random_string(random.randint(3, 6))
+        names.append(name)
+    for i in range(n):
+        subject = random.choice(subjects)
+        score = random.randint(50, 100)
+        name = random.choice(names)
+        for j in lista:
+            if j[0] == name and j[1] == subject:
+                break
+        else:
+            lista.append([name, subject, score])
+
+
+def average():
+    with open('data.csv', mode='r', encoding='utf-8') as f:
+        cf = csv.reader(f)
+        head = next(cf)  # 获取表头
+        scores = []
+        for i in cf:
+            scores.append(int(i[2]))
+        return sum(scores) / len(scores)
+
+
+def make_datas():
+    with open('data.csv', mode='a', encoding='utf-8') as f:
+        cf = csv.writer(f)
+        random_info()
+        cf.writerows(lista)
+
+
+make_datas()
+# result = average()
+# print('大家的平均分是',round(result,2))
+```
+
+data.csv：
+
+```tex
+hTRI,java,83
+kjRfoP,python,94
+KhXf,python,56
+VAytb,python,77
+QXvn,python,99
+jGNTql,html,72
+JDkeB,C++,54
+mWumj,html,87
+ZqeOSv,java,63
+RPV,java,65
+FAug,python,88
+kjRfoP,C++,54
+KhXf,python,74
+hTRI,java,96
+dJruAL,python,94
+hTRI,html,85
+jGNTql,html,80
+KBsbou,C++,83
+nmwWP,python,53
+zDPclC,java,62
+YRhNw,html,83
+gVw,python,72
+KhXf,python,63
+FAug,C++,86
+KhXf,C++,54
+ifNLzB,java,84
+qOl,java,51
+vWBbN,C++,64
+LCF,html,91
+ZqeOSv,html,64
+RPV,C++,87
+RPV,html,53
+vWBbN,python,87
+YRhNw,java,52
+FAug,python,78
+gVw,html,88
+LCF,java,63
+lfL,html,65
+FAug,html,61
+KBsbou,html,89
+ifNLzB,C++,69
+vWBbN,java,61
+hTRI,python,54
+QXvn,java,55
+rIgeHN,C++,59
+qOl,java,51
+ijIB,java,92
+LCF,python,67
+YRhNw,java,55
+YRhNw,html,66
+JDkeB,python,77
+YRhNw,python,69
+LCF,C++,66
+qOl,java,84
+hTRI,html,60
+ZqeOSv,html,78
+lfL,python,55
+KhXf,C++,83
+nmwWP,html,57
+gVw,java,100
+VAytb,C++,74
+lfL,C++,90
+VAytb,C++,66
+nmwWP,html,84
+rIgeHN,C++,84
+lfL,html,65
+mWumj,python,62
+LCF,html,70
+Vgd,python,52
+ZqeOSv,java,67
+dJruAL,java,66
+gVw,python,66
+VAytb,java,76
+ifNLzB,python,55
+YRhNw,java,98
+qOl,html,66
+RPV,html,61
+jGNTql,html,90
+qOl,python,60
+lfL,html,54
+dJruAL,java,94
+FAug,C++,84
+KhXf,html,90
+LCF,C++,96
+gVw,C++,70
+dJruAL,java,54
+QXvn,java,50
+kjRfoP,python,88
+ifNLzB,python,80
+ZqeOSv,C++,100
+zDPclC,C++,81
+mWumj,html,86
+LCF,java,85
+VAytb,C++,77
+mWumj,html,74
+nmwWP,java,92
+LCF,C++,78
+rIgeHN,html,94
+mWumj,java,77
+vWBbN,html,66
 ```
 
 ## 原文链接
