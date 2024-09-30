@@ -26,7 +26,7 @@
 
 ## JDK、JRE 和 JVM
 
-<img src="java-series-01-basic/image-20210211160001517.png" alt="image-20210211160001517" style="zoom:67%;" />
+![image-20210211160001517](java-series-01-basic/image-20210211160001517.png)
 
 - JDK = JRE + 开发工具集（例如 Javac 编译工具等）。
 
@@ -34,11 +34,11 @@
 
 ## 阶段
 
-<img src="java-series-01-basic/image-20210211160243390.png" alt="image-20210211160243390" style="zoom: 67%;" />
+![image-20210211160243390](java-series-01-basic/image-20210211160243390.png)
 
 **`编写`**：编写的 Java 代码保存在以`.java`为结尾的源文件中。
 
-- 在一个 Java 源文件中，可以声明多个 class 类，但是，只能最多有`一个`类声明为 public。而且，声明为 public 的类名，必须与源文件名相同。
+- 在一个 Java 源文件中，可以声明多个 class 类，但是，**只能最多有一个类声明为 public**。而且，声明为 public 的类名，必须与源文件名相同。
 
 **`编译`**：使用 javac.exe 命令编译 Java 源文件。格式：`javac 源文件名.java`。
 
@@ -56,7 +56,7 @@
 
 多行注释：` /* 注释文字 */`
 
-文档注释：`/** 注释文字 */`
+文档注释：`/** 注释文字 **/`
 
 - 对于单行注释和多行注释，被注释的文字，不会被 JVM 解释执行；
 
@@ -74,9 +74,9 @@
 
 官方地址：https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
 
-<img src="java-series-01-basic/1613032077.png" alt="1613032077" style="zoom: 50%;" />
+![1613032077](java-series-01-basic/1613032077.png)
 
-<img src="java-series-01-basic/1613032239.jpg" alt="1613032239" style="zoom: 50%;" />
+![1613032239](java-series-01-basic/1613032239.jpg)
 
 ### 保留字（reserved word）
 
@@ -117,7 +117,13 @@ Java 对各种变量、方法和类等要素命名时使用的字符序列称为
 
 ### 定义
 
-变量是内存中的一个存储区域，该区域的数据可以在同一类型范围内不断变化。
+`变量`：是内存中的一个存储区域，该区域的数据可以在同一类型范围内不断变化。
+
+- 变量是程序中最基本的存储单元，包含变量类型、变量名和存储的值。
+- Java 中每个变量必须先声明，后使用，使用变量名来访问这块区域的数据。
+- 变量的作用域：其定义所在的一对`{}`内，变量只有在其作用域内才有效，在同一个作用域内，不能定义重名的变量。
+
+示例：
 
 ```java
 public class VariableTest{
@@ -127,13 +133,13 @@ public class VariableTest{
         // 变量的使用
         System.out.println(myAge);
         
-        // 编译错误: 使用myNumber之前未定义myNumber
+        // 编译错误：使用 myNumber 之前未定义 myNumber
         // System.out.println(myNumber);
         
         // 变量的定义
         int myNumber;
         
-        // 编译错误: 使用myNumber之前未赋值myNumber
+        // 编译错误：使用 myNumber 之前未赋值 myNumber
         // System.out.println(myNumber);
         
         // 变量的赋值
@@ -145,15 +151,11 @@ public class VariableTest{
 }
 ```
 
-- 变量是程序中最基本的存储单元，包含变量类型、变量名和存储的值。
-- Java 中每个变量必须先声明，后使用，使用变量名来访问这块区域的数据。
-- 变量的作用域：其定义所在的一对`{}`内，变量只有在其作用域内才有效，在同一个作用域内，不能定义重名的变量。
-
 ### 按数据类型分类
 
 Java 是`强类型语言`，对于每一种数据都定义了明确的具体数据类型，并在内存中分配了不同大小的内存空间。
 
-<img src="java-series-01-basic/image-20210212124012438.png" alt="image-20210212124012438" style="zoom: 50%;" />
+![image-20210212124012438](java-series-01-basic/image-20210212124012438.png)
 
 #### 基本数据类型
 
@@ -170,7 +172,7 @@ Java 是`强类型语言`，对于每一种数据都定义了明确的具体数�
 
 ##### 整数类型
 
-<img src="java-series-01-basic/image-20210212144204390.png" alt="image-20210212144204390" style="zoom: 50%;" />
+![image-20210212144204390](java-series-01-basic/image-20210212144204390.png)
 
 - Java 各整数类型有固定的表数范围和字段长度，不受具体 OS 的影响，以保证 Java 程序的可移植性。
 
@@ -179,7 +181,7 @@ Java 是`强类型语言`，对于每一种数据都定义了明确的具体数�
 
 ##### 浮点类型
 
-<img src="java-series-01-basic/image-20210212151610319.png" alt="image-20210212151610319" style="zoom: 50%;" />
+![image-20210212151610319](java-series-01-basic/image-20210212151610319.png)
 
 - 与整数类型类似，Java 浮点类型也有固定的表数范围和字段长度，不受具体操作系统的影响。
 
@@ -219,13 +221,13 @@ boolean 类型用来判断逻辑条件，一般用于程序流程控制。
 
 `自动类型转换`：不同数据类型的变量做运算时，容量小的数据类型自动转换为容量大的数据类型。数据类型按容量大小排序为：
 
-<img src="java-series-01-basic/image-20210212173122461.png" alt="image-20210212173122461" style="zoom:67%;" />
+![image-20210212173122461](java-series-01-basic/image-20210212173122461.png)
 
 - 此处的容量大小，指的是该数据类型表示数的范围的大和小。
 
 - 有多种类型的数据混合运算时，系统首先自动将所有数据转换成容量最大的那种数据类型，然后再进行计算。
 
-- byte，short 和 char 之间不会相互转换，他们三者在计算时首先转换为 int 类型。
+- byte，short 和 char 之间不会相互转换，它们三者在计算时首先转换为 int 类型。
 
 - boolean 类型不能与其它数据类型运算。
 
@@ -249,7 +251,7 @@ String 不是基本数据类型，属于引用数据类型（class）。使用�
 
 ### 按声明位置分类
 
-<img src="java-series-01-basic/image-20210212141422206.png" alt="image-20210212141422206" style="zoom: 50%;" />
+![image-20210212141422206](java-series-01-basic/image-20210212141422206.png)
 
 - `成员变量`：在方法体外部，类体内部声明的变量。
 
@@ -262,15 +264,15 @@ String 不是基本数据类型，属于引用数据类型（class）。使用�
 
 对于整数，有四种表示方式：
 
-- `二进制 (binary)`：0 - 1，满 2 进 1，以 0b 或 0B 开头表示。
+- `二进制（binary）`：0 - 1，满 2 进 1，以 0b 或 0B 开头表示。
 
-- `十进制 (decimal)`：0 - 9，满 10 进 1。
+- `十进制（decimal）`：0 - 9，满 10 进 1。
 
-- `八进制 (octal)`：0 - 7，满 8 进 1，以数字 0 开头表示。
+- `八进制（octal）`：0 - 7，满 8 进 1，以数字 0 开头表示。
 
-- `十六进制 (hex)`：0 - 9 及 A - F，满 16 进 1，以 0x 或 0X 开头表示。此处的 A - F 不区分大小写。如：0x21AF + 1 = 0X21B0。
+- `十六进制（hex）`：0 - 9 及 A - F，满 16 进 1，以 0x 或 0X 开头表示。此处的 A - F 不区分大小写。如：0x21AF + 1 = 0X21B0。
 
-<img src="java-series-01-basic/image-20210212212735447.png" alt="image-20210212212735447" style="zoom: 40%;" />
+![image-20210212212735447](java-series-01-basic/image-20210212212735447.png)
 
 > 在计算机底层，所有数字都以`二进制`形式存在。
 
@@ -284,27 +286,27 @@ Java 整数常量默认是 int 类型，当用二进制定义整数时，其`第
 - 负数的`反码`：是对原码按位取反，但最高位（符号位）不变，确定为 1。
 - 负数的`补码`：其反码加 1。
 
-<img src="java-series-01-basic/image-20210212213913672.png" alt="image-20210212213913672" style="zoom: 40%;" />
+![image-20210212213913672](java-series-01-basic/image-20210212213913672.png)
 
->正数的原码、反码、补码都相同。
+>**正数的原码、反码、补码都相同。**
 
 **计算机以`二进制补码`的形式保存所有的整数。**
 
 原码到补码的转换：
 
-<img src="java-series-01-basic/image-20210213153635591.png" alt="image-20210213153635591" style="zoom: 40%;" />
+![image-20210213153635591](java-series-01-basic/image-20210213153635591.png)
 
 ### 不同进制间转换
 
 十进制转二进制：除 2 取余的逆。   
 
-<img src="java-series-01-basic/image-20210213153954522.png" alt="image-20210213153954522" style="zoom: 50%;" />
+![image-20210213153954522](java-series-01-basic/image-20210213153954522.png)
 
 二进制和八进制、十六进制转换：
 
-<img src="java-series-01-basic/image-20210213161118538.png" alt="image-20210213161118538" style="zoom: 50%;" />
+![image-20210213161118538](java-series-01-basic/image-20210213161118538.png)
 
-<img src="java-series-01-basic/image-20210213161151205.png" alt="image-20210213161151205" style="zoom: 50%;" />
+![image-20210213161151205](java-series-01-basic/image-20210213161151205.png)
 
 ## 运算符
 
@@ -312,7 +314,7 @@ Java 整数常量默认是 int 类型，当用二进制定义整数时，其`第
 
 ### 算术运算符
 
-<img src="java-series-01-basic/1613290563.png" alt="1613290563" style="zoom: 50%;" />
+![1613290563](java-series-01-basic/1613290563.png)
 
 - 如果对负数取模，可以把模数负号忽略不记，如：5 % -2 = 1。 如果被模数是负数，则不可忽略，如：-5 % 2 = -1。此外，取模运算的结果不一定总是整数。
 
@@ -350,16 +352,16 @@ System.out.println(n);// 32
 
 ### 比较运算符/关系运算符
 
-<img src="java-series-01-basic/1613309263.jpg" alt="1613309263" style="zoom: 50%;" />
+![1613309263](java-series-01-basic/1613309263.jpg)
 
 - 比较运算符的结果都是 boolean 型。
 
 ### 逻辑运算符
 
-&：逻辑与，|：逻辑或，!：逻辑非。
-&&：短路与，||：短路或，^：逻辑异或。
+`&`：逻辑与，`|`：逻辑或，`!`：逻辑非。
+`&&`：短路与，`||`：短路或，`^`：逻辑异或。
 
-<img src="java-series-01-basic/image-20210215090130168.png" alt="image-20210215090130168" style="zoom: 40%;" />
+![image-20210215090130168](java-series-01-basic/image-20210215090130168.png)
 
 - 逻辑运算符用于连接布尔型表达式，在 Java 中不可以写成 3 < x < 6，应该写成 x > 3 & x < 6。
 
@@ -414,19 +416,19 @@ System.out.println("z = " + z);// z = 46
 
 ### 位运算符
 
-<img src="java-series-01-basic/image-20210215095803025.png" alt="image-20210215095803025" style="zoom: 50%;" />
+![image-20210215095803025](java-series-01-basic/image-20210215095803025.png)
 
-<img src="java-series-01-basic/1613359206.png" alt="1613359206" style="zoom: 50%;" />
+![1613359206](java-series-01-basic/1613359206.png)
 
 - 无 <<< 运算符。
 
 - **位运算是直接对整数的二进制进行的运算。**
 
-  <img src="java-series-01-basic/image-20210215102050019.png" alt="image-20210215102050019" style="zoom: 55%;" />
+  ![image-20210215102050019](java-series-01-basic/image-20210215102050019.png)
 
-  <img src="java-series-01-basic/1613359872.jpg" alt="1613359872" style="zoom: 55%;" />
+  ![1613359872](java-series-01-basic/1613359872.jpg)
 
-  <img src="java-series-01-basic/image-20210215113211505.png" alt="image-20210215113211505" style="zoom:55%;" />
+  ![image-20210215113211505](java-series-01-basic/image-20210215113211505.png)
 
 - << ：在一定范围内，每向左移一位，相当于乘以 2。
 
@@ -476,7 +478,7 @@ System.out.println(num1 + ", " + num2);
 
 格式：
 
-<img src="java-series-01-basic/image-20210215115911103.png" alt="image-20210215115911103" style="zoom: 60%;" />
+![image-20210215115911103](java-series-01-basic/image-20210215115911103.png)
 
 - **表达式 1 和表达式 2 要求类型是一致的，因为要与接受的参数类型相同。**
 
@@ -490,7 +492,7 @@ System.out.println(num1 + ", " + num2);
 
 ### 运算符的优先级
 
-<img src="java-series-01-basic/image-20210215125103840.png" alt="image-20210215125103840" style="zoom: 60%;" />
+![image-20210215125103840](java-series-01-basic/image-20210215125103840.png)
 
 - 运算符有不同的优先级，所谓优先级就是表达式运算中的运算顺序。如上表，上一行运算符总优先于下一行。
 - 只有单目运算符、三元运算符、赋值运算符是从右向左运算的。
@@ -505,19 +507,19 @@ System.out.println(num1 + ", " + num2);
 - `分支结构`：根据条件，选择性地执行某段代码。有`if-else`和`switch-case`两种分支语句。
 - `循环结构`：根据循环条件，重复性的执行某段代码。有`while`、`do-while`、`for`三种循环语句。
 
-<img src="java-series-01-basic/1613398126.png" alt="1613398126" style="zoom: 50%;" />
+![1613398126](java-series-01-basic/1613398126.png)
 
-> 注：JDK 1.5 提供了 foreach 循环，方便遍历集合、数组元素。
+> 注：JDK 1.5 提供了`foreach`循环，方便遍历集合、数组元素。
 
 ### if-else 结构
 
-<img src="java-series-01-basic/1613392531.png" alt="1613392531" style="zoom: 50%;" />
+![1613392531](java-series-01-basic/1613392531.png)
 
-<img src="java-series-01-basic/1613392642.jpg" alt="1613392642" style="zoom: 50%;" />
+![1613392642](java-series-01-basic/1613392642.jpg)
 
 ### switch-case 结构
 
-<img src="java-series-01-basic/1613392720.jpg" alt="1613392720" style="zoom: 50%;" />
+![1613392720](java-series-01-basic/1613392720.jpg)
 
 - switch（表达式）中表达式的值，必须是下述几种类型之一：**byte，short，char，int，枚举类（JDK 5.0），String 类（JDK 7.0）。**
 - case 子句中的值**必须是常量**，不能是变量名或不确定的表达式值。
@@ -559,7 +561,7 @@ switch (num) {
         break;
     default:
         System.out.println("other");
-        break;// default位于最后, 此break可以不添加
+        break;// default 位于最后, 此 break 可以不添加
 }
 ```
 
@@ -640,9 +642,9 @@ public static void main(String[] args) {
         case 3:
             if ((year % 4 == 0 && year % 100 != 0) ||
                     year % 400 == 0) {
-                sumDays += 29;// 闰年2月29天
+                sumDays += 29;// 闰年 2 月 29 天
             } else {
-                sumDays += 28;// 平年2月28天
+                sumDays += 28;// 平年 2 月 28 天
             }
         case 2:
             sumDays += 31;
@@ -666,7 +668,7 @@ public static void main(String[] args) {
 
 语法格式：
 
-<img src="java-series-01-basic/image-20210216100450322.png" alt="image-20210216100450322" style="zoom: 50%;" />
+![image-20210216100450322](java-series-01-basic/image-20210216100450322.png)
 
 执行过程：① - ② - ③ - ④ - ② - ③ - ④ - ② - ③ - ④ - ...... - ②
 
@@ -717,7 +719,7 @@ public static void main(String[] args) {
 
 语法格式：
 
-<img src="java-series-01-basic/image-20210216105032083.png" alt="image-20210216105032083" style="zoom: 50%;" />
+![image-20210216105032083](java-series-01-basic/image-20210216105032083.png)
 
 执行过程：① - ② - ③ - ④ - ② - ③ - ④ - ② - ③ - ④ - ...... - ②
 
@@ -730,7 +732,7 @@ public static void main(String[] args) {
 
 语法格式：
 
-<img src="java-series-01-basic/image-20210216105553968.png" alt="image-20210216105553968" style="zoom: 50%;" />
+![image-20210216105553968](java-series-01-basic/image-20210216105553968.png)
 
 执行过程：① - **③ - ④** - ② - ③ - ④ - ② - ③ - ④ - ② - ③ - ④ - ...... - ②
 
@@ -774,42 +776,42 @@ public static void main(String[] args) {
 ```java
 // 方式一
 public static void main(String[] args) {
-    // 质数: 素数, 只能被1和它本身整除的自然数, 2是最小的质数
+    // 质数：素数, 只能被 1 和它本身整除的自然数, 2 是最小的质数
     int count = 0;
     boolean ifFlag = true;
     for (int i = 2; i <= 100000; i++) {
-        // 优化一: 使用Math.sqrt(i)代替i, 减少循环的次数
-        // i除以一个从2开始的小数, 会得到一个从i-1开始的大数, 因此, 除以2开始的小数与除以从i-1开始的大数, 
-        // 可以省略一个, 以减少次数, 这样计算的中点是i开方的值
+        // 优化一：使用 Math.sqrt(i) 代替 i, 减少循环的次数
+        // i 除以一个从 2 开始的小数, 会得到一个从 i-1 开始的大数, 因此, 除以 2 开始的小数与除以从 i-1 开始的大数, 
+        // 可以省略一个, 以减少次数, 这样计算的中点是 i 开方的值
         for (int j = 2; j <= Math.sqrt(i); j++) {
             if (i % j == 0) {
                 ifFlag = false;
-                // 优化二: 使用break, 跳出不必要的循环
+                // 优化二：使用 break, 跳出不必要的循环
                 break;
             }
         }
         if (ifFlag) {
-            // 优化三: 不打印, i越大, 打印的耗时越长
+            // 优化三：不打印, i 越大, 打印的耗时越长
             // System.out.println("质数：" + i);
             count++;
         }
         // 重置
         ifFlag = true;
     }
-    System.out.println("质数的个数有：" + count);// 质数的个数有: 9592
+    System.out.println("质数的个数有：" + count);// 质数的个数有：9592
 }
 ```
 
 ```java
 // 方式二
 public static void main(String[] args) {
-    // 质数: 素数, 只能被1和它本身整除的自然数, 2是最小的质数
+    // 质数：素数, 只能被 1 和它本身整除的自然数, 2 是最小的质数
     int count = 0;
     label:
     for (int i = 2; i <= 100000; i++) {
-        // 优化一: 使用Math.sqrt(i)代替i, 减少循环的次数
-        // i除以一个从2开始的小数, 会得到一个从i-1开始的大数, 因此, 除以2开始的小数与除以从i-1开始的大数, 
-        // 可以省略一个, 以减少次数, 这样计算的中点是i开方的值
+        // 优化一：使用 Math.sqrt(i) 代替 i, 减少循环的次数
+        // i 除以一个从 2 开始的小数, 会得到一个从 i-1 开始的大数, 因此, 除以 2 开始的小数与除以从 i-1 开始的大数, 
+        // 可以省略一个, 以减少次数, 这样计算的中点是 i 开方的值
         for (int j = 2; j <= Math.sqrt(i); j++) {
             if (i % j == 0) {
                 continue label;
@@ -817,11 +819,13 @@ public static void main(String[] args) {
         }
         count++;
     }
-    System.out.println("质数的个数有：" + count);// 质数的个数有: 9592
+    System.out.println("质数的个数有：" + count);// 质数的个数有：9592
 }
 ```
 
 ### break 和 continue
+
+使用方式：
 
 - break 使用在 switch-case 结构或者循环结构中。
 
@@ -833,8 +837,8 @@ public static void main(String[] args) {
   public static void main(String[] args) {
       for (int i = 1; i <= 10; i++) {
           if (i % 4 == 0) {
-              break;// 输出结果: 1 2 3
-              continue;// 输出结果: 1 2 3 5 6 7 9 10
+              break;// 输出结果：1 2 3
+              continue;// 输出结果：1 2 3 5 6 7 9 10
           }
           System.out.print(i + "\t");
       }
@@ -843,7 +847,7 @@ public static void main(String[] args) {
 
 - break 语句出现在多层嵌套的语句块中时，可以通过标签指明要终止的是哪一层语句块（默认跳出包裹 break 最近的一层循环）：
 
-<img src="java-series-01-basic/image-20210216161327840.png" alt="image-20210216161327840" style="zoom:60%;" />
+![image-20210216161327840](java-series-01-basic/image-20210216161327840.png)
 
 - continue 语句出现在多层嵌套的循环语句体中时，可以通过标签指明要跳过的是哪一层循环（默认跳出包裹 continue 最近的一层循环）。
 
@@ -853,17 +857,17 @@ public static void main(String[] args) {
       for (int i = 1; i <= 4; i++) {
           for (int j = 1; j <= 10; j++) {
               if (j % 4 == 0) {
-                  break label;// 结束指定标识label层的当前循环
-                  continue label;// 结束指定标识label层的当次循环
+                  break label;// 结束指定标识 label 层的当前循环
+                  continue label;// 结束指定标识 label 层的当次循环
               }
               System.out.print(j);
           }
           System.out.println();
       }
   }
-  break label输出结果：
+  break label 输出结果：
   123
-  continue label输出结果：
+  continue label 输出结果：
   123123123123
   ```
 
