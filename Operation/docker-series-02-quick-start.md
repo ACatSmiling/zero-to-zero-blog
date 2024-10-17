@@ -82,10 +82,10 @@ $ docker images [OPTIONS]
 ```
 
 - OPTIONS 说明：
-  - -a：列出本地所有的镜像（含中间映射层）。
-  - -q：只显示镜像ID。
-  - --digests：显示镜像的摘要信息。
-  - --no-trunc：显示完整的镜像信息。
+  - `-a`：列出本地所有的镜像（含中间映射层）。
+  - `-q`：只显示镜像ID。
+  - `--digests`：显示镜像的摘要信息。
+  - `--no-trunc`：显示完整的镜像信息。
 
 **`查询镜像`**：
 
@@ -94,9 +94,9 @@ $ docker search [OPTIONS] 镜像名字
 ```
 
 - OPTIONS 说明：
-  - --no-trunc：显示完整的镜像描述。
-  - -s：列出收藏数不小于指定值的镜像。
-  - --automated：只列出 automated build 类型的镜像
+  - `--no-trunc`：显示完整的镜像描述。
+  - `-s`：列出收藏数不小于指定值的镜像。
+  - `--automated`：只列出 automated build 类型的镜像
 
 
 **`下载镜像`**：
@@ -135,7 +135,7 @@ $ docker save [OPTIONS] IMAGE [IMAGE...] > output.tar
 ```
 
 - OPTIONS 说明：
-  - -o：指定输出文件的名称和路径，和 > 的作用类似。
+  - `-o`：指定输出文件的名称和路径，和`>`的作用类似。
 
 **`加载镜像压缩文件到本地仓库`**：
 
@@ -144,7 +144,31 @@ $ docker load [OPTIONS] < input.tar
 ```
 
 - OPTIONS 说明：
-  - -i：指定输入文件，和 < 的作用类似。
+  - `-i`：指定输入文件，和`<`的作用类似。
+
+**`通过 Dockerfile 构建 Docker 镜像`**：
+
+```shell
+$ docker build [OPTIONS] PATH|URL|-
+```
+
+- OPTIONS（可选参数）
+  - `-t，--tag`：用于给构建的镜像指定标签（名称和版本等信息），格式：`-t <repository>:<tag>`。
+    - 例如："docker build -t my-image:latest ."，会构建一个名为 my-image、标签为 latest 的镜像。（注意最后的点表示当前目录是 Dockerfile 所在的目录）
+    - 也可以同时指定多个标签，例如："docker build -t my-image:v1 -t my-image:latest ."。
+  - `--no-cache`：默认情况下，docker build 会使用缓存来加速构建过程。如果之前已经构建过相同的指令，并且基础镜像和相关文件没有变化，Docker 会使用缓存的结果。但是使用 --no-cache 参数会强制不使用缓存，重新执行所有的构建指令。这在需要确保构建是最新的，或者在调试构建过程中可能出现的问题时很有用。
+    - 例如："docker build --no-cache -t my-new-image:latest ."。
+  - `-f，--file`：用于指定 Dockerfile 的路径。如果 Dockerfile 不在当前目录或者名称不是 Dockerfile，可以使用这个参数来指定。
+    - 例如："docker build -f /path/to/Dockerfile -t my-custom-image:latest ."，其中 /path/to/Dockerfile 是 Dockerfile 的实际路径。
+    - 当使用 docker build 命令并指定了`-f`参数时，通常也需要在命令末尾添加一个`.`，这个`.`代表当前目录，是告诉 docker build 命令在构建镜像时，以当前目录作为上下文路径（context path）。
+  - --build-arg：用于在构建镜像时传递参数给 Dockerfile 中的 ARG 指令，格式：`--build-arg <key>=<value>`。
+    - 例如："docker build --build-arg VERSION=2.0 -t my-image:latest ."，会将 VERSION 变量的值设置为 2.0，在 Dockerfile 中可以使用这个变量来构建不同版本的镜像。
+- PATH | URL | -（必需参数）
+  - `PATH`：这是最常见的情况，指的是`Dockerfile`所在的本地目录路径。
+    - 例如："docker build -t my-image:latest /home/user/docker-project/"，表示在 /home/user/docker-project/ 目录下有 Dockerfile，并且以这个目录为基础构建镜像。
+  - `URL`：可以从一个远程的 Dockerfile 仓库（如 Git 仓库）构建镜像。不过这种方式相对复杂，并且需要确保远程仓库的可访问性和 Dockerfile 的正确性。
+    - 例如："docker build -t my-remote-image:latest https://github.com/user/docker-project.git#:sub-directory/"，表示从指定的 Git 仓库的子目录下构建镜像。
+  - `-`：可以从标准输入读取 Dockerfile 内容来构建镜像。这种方式比较少见，但在一些特殊的自动化构建场景或者与其他工具集成时可能会用到。
 
 ### 容器命令
 
@@ -157,31 +181,31 @@ $ docker run [OPTIONS] IMAGENAME [COMMAND][ARG]
 ```
 
 - OPTIONS 说明：
-  - -d：以守护进程（daemon）模式运行容器。
-  - -i：以交互模式运行容器，保持容器的标准输入（stdin）打开。通常与`-t`参数一起使用。
-  - -t：为容器分配一个伪终端（tty），使得容器内的命令输出更像是在本地终端中执行一样。常与`-i`参数一起使用，形成`-it`组合。
-  - -p：将容器内部的端口映射到主机（宿主机）的端口。格式：
+  - `-d`：以守护进程（daemon）模式运行容器。
+  - `-i`：以交互模式运行容器，保持容器的标准输入（stdin）打开。通常与`-t`参数一起使用。
+  - `-t`：为容器分配一个伪终端（tty），使得容器内的命令输出更像是在本地终端中执行一样。常与`-i`参数一起使用，形成`-it`组合。
+  - `-p`：将容器内部的端口映射到主机（宿主机）的端口。格式：
     - `-p <host-port>:<container-port>`
     - `-p <ip-address>:<host-port>:<container-port>`
-  - -P：将容器内部所有声明了的端口（即通过`EXPOSE`指令在 Dockerfile 中声明的端口）自动映射到主机的随机端口。
-  - -v：将主机的目录或者文件挂载到容器内，或者创建一个具名数据卷并挂载到容器内。格式：
+  - `-P`：将容器内部所有声明了的端口（即通过 EXPOSE 指令在 Dockerfile 中声明的端口）自动映射到主机的随机端口。
+  - `-v`：将主机的目录或者文件挂载到容器内，或者创建一个具名数据卷并挂载到容器内。格式：
     - `-v <host-dir>:<container-dir>`
     - `-v <volume-name>:<container-dir>`
-  - -e：设置容器内的环境变量，格式：`-e <key>=<value>`。
+  - `-e`：设置容器内的环境变量，格式：`-e <key>=<value>`。
     - 例如，"docker run -e MY_APP_VERSION=1.0 nginx" 会在容器内设置一个名为 MY_APP_VERSION 的环境变量，其值为 1.0。
-  - --name：为容器指定一个名称，若不指定，由系统随机分配。
-  - --restart：设置容器的重启策略。取值：
+  - `--name`：为容器指定一个名称，若不指定，由系统随机分配。
+  - `--restart`：设置容器的重启策略。取值：
     - `no`：默认值，不重启。
     - `on-failure`：容器退出非 0 状态码时重启。
     - `always`：无论容器如何退出都重启。
     - `unless-stopped`：容器退出时重启，除非手动停止。
-  - --network：将容器连接到指定的网络。取值：
+  - `--network`：将容器连接到指定的网络。取值：
     - `bridge`：默认网络。
     - `host`：容器使用主机网络。
     - `none`：容器没有网络。
     - `自定义网络`。
-  - --rm：在容器退出后自动删除容器。
-  - --cpus 和 --memory：--cpus 用于限制容器可以使用的 CPU 核心数，--memory 用于限制容器可以使用的内存大小。
+  - `--rm`：在容器退出后自动删除容器。
+  - `--cpus`和`--memory`：--cpus 用于限制容器可以使用的 CPU 核心数，--memory 用于限制容器可以使用的内存大小。
     - 例如，"docker run --cpus=2 --memory=1G nginx" 会限制 Nginx 容器最多使用 2 个 CPU 核心和 1GB 的内存。
 
 **`列出当前所有正在运行的容器`**：
@@ -191,14 +215,14 @@ $ docker ps [OPTIONS]
 ```
 
 - OPTIONS 说明：
-  - -a：显示所有的容器，包括正在运行的和已经停止的。默认情况下，docker ps 只显示正在运行的容器。
-  - -q：以安静模式输出，只返回容器的 ID。这在需要将容器 ID 作为其他命令（如 docker stop、docker rm 等）的参数时特别方便。
-  - -n：显示最近创建的 n 个容器，包括正在运行的和已经停止的。
-  - -l：显示最新创建的容器，包括正在运行的和已经停止的。它和 "-n 1" 有点类似，但更强调是最后一个创建的容器。
-  - -s：显示每个容器所占用的磁盘空间大小。这包括容器的读写层（用于存储容器内修改的数据）以及容器所使用的基础镜像的大小。
-  - --format：按照指定的格式输出容器信息，格式可以使用 Go 语言的模板语法进行自定义。
+  - `-a`：显示所有的容器，包括正在运行的和已经停止的。默认情况下，docker ps 只显示正在运行的容器。
+  - `-q`：以安静模式输出，只返回容器的 ID。这在需要将容器 ID 作为其他命令（如 docker stop、docker rm 等）的参数时特别方便。
+  - `-n`：显示最近创建的 n 个容器，包括正在运行的和已经停止的。
+  - `-l`：显示最新创建的容器，包括正在运行的和已经停止的。它和 "-n 1" 有点类似，但更强调是最后一个创建的容器。
+  - `-s`：显示每个容器所占用的磁盘空间大小。这包括容器的读写层（用于存储容器内修改的数据）以及容器所使用的基础镜像的大小。
+  - `--format`：按照指定的格式输出容器信息，格式可以使用 Go 语言的模板语法进行自定义。
     - 例如，`docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"`会以表格形式输出容器的 ID、名称和状态信息，并且可以根据自己的需求调整表格的列内容和格式。
-  - --no-trunc：不截断输出。在默认情况下，docker ps 会截断（truncate）容器 ID 和其他一些信息，以方便在终端中显示，使其输出更加整洁。但是，当使用 --no-trunc 参数时，docker ps 将不会截断容器 ID、镜像名称和其他相关信息，会完整地显示所有内容。
+  - `--no-trunc`：不截断输出。在默认情况下，docker ps 会截断（truncate）容器 ID 和其他一些信息，以方便在终端中显示，使其输出更加整洁。但是，当使用 --no-trunc 参数时，docker ps 将不会截断容器 ID、镜像名称和其他相关信息，会完整地显示所有内容。
 
 
 **`停止正在运行的容器`**：
@@ -247,22 +271,6 @@ $ docker ps -aq | xargs docker rm
 $ docker kill <container_id_or_name>
 ```
 
-`根据 Dockerfile 构建 Docker 镜像`：
-
-```shell
-$ docker build [OPTIONS] PATH|URL|-
-```
-
-- OPTIONS（可选参数）
-  - **`-t, --tag`**：用于给构建的镜像指定标签（名称和版本等信息）。格式为`-t <repository>:<tag>`。例如，`docker build -t my - image:latest.`（注意最后的点表示当前目录是`Dockerfile`所在的目录）会构建一个名为`my - image`、标签为`latest`的镜像。可以同时指定多个标签，如`docker build -t my - image:v1 - t my - image:latest.`。
-  - **`--no - cache`**：默认情况下，`docker build`会使用缓存来加速构建过程。如果之前已经构建过相同的指令，并且基础镜像和相关文件没有变化，Docker 会使用缓存的结果。但是使用`--no - cache`参数会强制不使用缓存，重新执行所有的构建指令。这在需要确保构建是最新的，或者在调试构建过程中可能出现的问题时很有用。例如，`docker build --no - cache -t my - new - image:latest.`。
-  - **`-f, --file`**：用于指定`Dockerfile`的路径。如果`Dockerfile`不在当前目录或者名称不是`Dockerfile`，可以使用这个参数来指定。例如，`docker build -f /path/to/Dockerfile - t my - custom - image:latest.`，其中`/path/to/Dockerfile`是`Dockerfile`的实际路径。
-  - **`--build - arg`**：用于在构建镜像时传递参数给`Dockerfile`中的`ARG`指令。格式为`--build - arg <key>=<value>`。例如，`docker build --build - arg VERSION = 2.0 - t my - image:latest.`会将`VERSION`变量的值设置为`2.0`，在`Dockerfile`中可以使用这个变量来构建不同版本的镜像。
-- `PATH | URL | -`（必需参数）
-  - **`PATH`**：这是最常见的情况，指的是`Dockerfile`所在的本地目录路径。例如，`docker build -t my - image:latest /home/user/docker - project/`，表示在`/home/user/docker - project/`目录下有`Dockerfile`，并且以这个目录为基础构建镜像。
-  - **`URL`**：可以从一个远程的`Dockerfile`仓库（如 Git 仓库）构建镜像。不过这种方式相对复杂，并且需要确保远程仓库的可访问性和`Dockerfile`的正确性。例如，`docker build -t my - remote - image:latest https://github.com/user/docker - project.git#:sub - directory/`，表示从指定的 Git 仓库的子目录下构建镜像。
-  - **`-`**：可以从标准输入读取`Dockerfile`内容来构建镜像。这种方式比较少见，但在一些特殊的自动化构建场景或者与其他工具集成时可能会用到。
-
 #### 信息查看
 
 **`查看容器详细信息`**：
@@ -280,9 +288,9 @@ $ docker logs [OPTIONS] <container_id_or_name>
 ```
 
 - OPTIONS 说明：
-  - -t：添加时间戳。
-  - -f：跟踪最新的日志打印。
-  - --tail number：显示最后 number 条。
+  - `-t`：添加时间戳。
+  - `-f`：跟踪最新的日志打印。
+  - `--tail number`：显示最后 number 条。
 
 **`查看正在运行的容器内的进程信息`**：
 
@@ -291,7 +299,7 @@ $ docker top [OPTIONS] <container_id_or_name> [ps OPTIONS]
 ```
 
 - OPTIONS 说明：
-  - -f：持续跟踪容器内进程信息的更新。
+  - `-f`：持续跟踪容器内进程信息的更新。
 - ps OPTIONS 说明：
   - docker top 命令在内部是通过类似 ps （进程查看）命令来获取进程信息的，所以可以在这里传递一些 ps 命令的选项来定制输出。
   - 例如，-aux 是 ps 命令的常见选项，用于显示所有用户的所有进程（包括没有控制终端的进程）的详细信息，不过在 docker top 中使用这些选项可能会受到一定限制，具体取决于 Docker 的实现。
@@ -353,7 +361,7 @@ $ docker export [OPTIONS] CONTAINER > output.tar
 ```
 
 - OPTIONS 说明：
-  - -o：指定输出文件的名称和路径，和 > 的作用类似。
+  - `-o`：指定输出文件的名称和路径，和 > 的作用类似。
 - 与 docker save 不同的是，docker export 重点关注容器内部的文件系统内容，它不会包含镜像的元数据（如分层信息、标签、构建历史等）。这种方式导出的文件可以看作是对容器在某一时刻的文件系统状态的一个 "快照"。
 - 当使用 docker export 时，导出的文件包含了容器内文件系统中的所有文件和目录。这包括应用程序文件、配置文件、数据文件等一切存储在容器文件系统中的内容。但是，由于没有包含镜像的元数据，所以通过 docker import （与 docker export 相对应的导入命令）导入后得到的新镜像，其历史记录和构建相关的信息是缺失的。这意味着新镜像更像是一个基于容器文件系统内容创建的基础镜像，与原来的镜像在构建和维护信息上没有关联。
 - 应用场景示例：
@@ -428,4 +436,11 @@ Dockerfile 的指令：
 
 Dockerfile 构建镜像的过程：
 
-- 当使用`docker build`命令并指定包含 Dockerfile 的目录时，Docker 会读取 Dockerfile 中的指令。首先，它会拉取`FROM`指令指定的基础镜像。然后，按照顺序依次执行后续的指令，每执行一个指令，就会在基础镜像的基础上创建一个新的层，这些层叠加在一起最终形成了完整的镜像。在构建过程中，如果某个指令失败，构建过程会停止，并且之前构建的层仍然保留，以便于调试和重新构建。
+- 当使用 docker build 命令并指定包含 Dockerfile 的目录时，Docker 会读取 Dockerfile 中的指令。
+- 首先，它会拉取 FROM 指令指定的基础镜像。
+- 然后，按照顺序依次执行后续的指令，每执行一个指令，就会在基础镜像的基础上创建一个新的层，这些层叠加在一起最终形成了完整的镜像。
+- 在构建过程中，如果某个指令失败，构建过程会停止，并且之前构建的层仍然保留，以便于调试和重新构建。
+
+## 原文链接
+
+https://github.com/ACatSmiling/zero-to-zero/blob/main/Operation/docker.md
