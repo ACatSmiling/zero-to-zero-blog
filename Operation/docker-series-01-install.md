@@ -139,7 +139,7 @@
    $ journalctl -xeu docker | less
    ```
 
-## docker-compose 安装
+## Docker Compose 安装
 
 1. 官网下载二进制程序包（以下示例脚本为通过代理站从 GitHub 下载最新版 docker-compose 的安装包，也可以用浏览器直接从浏览器下载再传到服务器。如果使用该脚本，下面的第 2、3 步可以不执行。）
 
