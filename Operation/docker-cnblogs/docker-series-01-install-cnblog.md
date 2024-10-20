@@ -1,4 +1,4 @@
->*`Author: ACatSmiling`*
+﻿>*`Author: ACatSmiling`*
 >
 >*`Since: 2024-10-12`*
 
@@ -208,9 +208,9 @@ $ sudo systemctl restart docker
 
 代理配置完成后，需要设置防火墙的入站规则，否则可能出现无法拉取镜像，宿主机也无法 ping 通虚拟机的情况。
 
-![image-20240621234809771](docker-series-01-install/image-20240621234809771.png)
+![image-20240621234809771](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241018140535962-1038105133.png)
 
-![image-20240622001039962](docker-series-01-install/image-20240622001039962.png)
+![image-20240622001039962](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241018140535208-962572287.png)
 
 ## 安装脚本
 
