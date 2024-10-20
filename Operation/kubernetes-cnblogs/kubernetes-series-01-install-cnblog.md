@@ -1,4 +1,4 @@
-> *`Author: ACatSmiling`*
+﻿> *`Author: ACatSmiling`*
 >
 > *`Since: 2024-10-17`*
 
@@ -14,7 +14,7 @@
 
 > 使用 Hyper-V 时，注意配置动态内存的最小值：
 >
-> ![image-20240902213655950](kubernetes-series-01-install/image-20240902213655950.png)
+> ![image-20240902213655950](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241021000114818-1140754235.png)
 
 ## 操作系统
 
@@ -783,7 +783,7 @@ kube-scheduler-k8s-master            1/1     Running   6 (23h ago)    7d23h
 >
 > 1. 修改 CALICO_IPV4POOL_CIDR 配置，该配置默认是注释掉的，如果不是注释掉的，将其修改为与 Master 节点 init 时的 "--pod-network-cidr=10.244.0.0/16" 保持一致。
 >
->    ![image-20240906230815028](kubernetes-series-01-install/image-20240906230815028.png)
+>    ![image-20240906230815028](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241021000114461-1403809406.png)
 >
 > 2. 将文件中需要下载的镜像前面的 docker.io 替换为空。
 >
@@ -857,7 +857,7 @@ Commercial support is available at
 
 页面访问 192.168.1.120:31173：
 
-![image-20240907192611766](kubernetes-series-01-install/image-20240907192611766.png)
+![image-20240907192611766](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241021000114123-344077343.png)
 
 - 访问 192.168.1.121:31173 和 192.168.1.122:31173 具有相同的效果。
 
@@ -928,7 +928,7 @@ users:
 
 kubectl 工具的常用的命令和功能如下：
 
-![1725896605275](kubernetes-series-01-install/1725896605275.jpg)
+![1725896605275](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241021000113790-229185393.jpg)
 
 - 更多命令查看官网：https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
 
@@ -974,7 +974,7 @@ kubectl 工具的常用的命令和功能如下：
 
 ## API 概述
 
-![1729439560261](kubernetes-series-01-install/1729439560261.jpg)
+![1729439560261](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241021000113287-1517240630.jpg)
 
 官网：https://kubernetes.io/zh-cn/docs/reference/using-api/（https://kubernetes.io/docs/reference/using-api/deprecation-guide/）
 
