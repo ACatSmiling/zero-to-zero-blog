@@ -1,4 +1,4 @@
-> *`Author: ACatSmiling`*
+﻿> *`Author: ACatSmiling`*
 >
 > *`Since: 2024-10-22`*
 
@@ -312,7 +312,7 @@
 
   - 示例：
 
-    ![image-20241023233903308](linux-series-03-system-command/image-20241023233903308.png)
+    ![image-20241023233903308](https://img2023.cnblogs.com/blog/3488201/202410/3488201-20241023233940204-1635574575.png)
 
 **内存信息：**
 
