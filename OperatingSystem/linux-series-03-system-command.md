@@ -96,7 +96,7 @@
        - (mockbuild@kbuilder.bsys.centos.org)：显示了构建内核的主机名或构建环境相关的信息。在这个例子中，mockbuild 可能是构建用户，kbuilder.bsys.centos.org 是构建主机的名称。
        - (gcc version 8.3.1 20190311 (Red Hat 8.3.1 - 3) (GCC))：提供了用于构建内核的 GCC（GNU Compiler Collection）编译器的版本信息。这里使用的 GCC 版本是 8.3.1，日期是 20190311，后面还带有与 Red Hat 相关的版本标识，这表明内核是使用特定版本的 GCC 编译器在 Red Hat 环境下构建的。
      - **SMP 和时间戳部分**：
-       - #1 SMP Fri Mar 27 14:05:59 UTC 2020：SMP 代表对称多处理（Symmetric Multi - Processing），说明这个内核支持多个处理器同时工作。#1 可能是构建编号或内核发布编号之类的标识。最后的时间戳 Fri Mar 27 14:05:59 UTC 2020 表示内核的构建时间是 2020 年 3 月 27 日，星期五，协调世界时（UTC）14:05:59。
+       - \#1 SMP Fri Mar 27 14:05:59 UTC 2020：SMP 代表对称多处理（Symmetric Multi - Processing），说明这个内核支持多个处理器同时工作。#1 可能是构建编号或内核发布编号之类的标识。最后的时间戳 Fri Mar 27 14:05:59 UTC 2020 表示内核的构建时间是 2020 年 3 月 27 日，星期五，协调世界时（UTC）14:05:59。
 
    - 示例：
 
