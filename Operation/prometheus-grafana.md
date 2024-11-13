@@ -143,10 +143,6 @@ Prometheus 下载：
 
 <img src="prometheus-grafana/image-20241111231317708.png" alt="image-20241111231317708" style="zoom:80%;" />
 
-node_export 下载：
-
-<img src="prometheus-grafana/image-20241111231603976.png" alt="image-20241111231603976" style="zoom:80%;" />
-
 将下载的二进制包上传到服务器后，解压缩：
 
 ```shell
@@ -172,6 +168,83 @@ prometheus-2.55.1.linux-amd64/console_libraries/
 prometheus-2.55.1.linux-amd64/console_libraries/menu.lib
 prometheus-2.55.1.linux-amd64/console_libraries/prom.lib
 prometheus-2.55.1.linux-amd64/NOTICE
+```
+
+修改配置文件 prometheus.yml：
+
+```shell
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # 添加 Node Exporter 监控配置
+  - job_name: 'node exporter'
+    static_configs:
+      - targets: ['172.20.10.12:9100']
+```
+
+- **global 配置块**：控制 Prometheus 服务器的全局配置。
+  - `scrape_interval`：配置拉取数据的时间间隔，默认为 1 分钟。
+  - `evaluation_interval`：规则验证（生成 alert）的时间间隔，默认为 1 分钟。
+- **rule_files 配置块**：规则配置文件。
+- **scrape_configs 配置块**：配置采集目标相关， prometheus 监视的目标。Prometheus 自身的运行信息可以通过 HTTP 访问，所以 Prometheus 可以监控自己的运行数据。
+  - `job_name`：监控作业的名称。
+  - `static_configs`：表示静态目标配置，就是固定从某个 target 拉取数据。
+  - `targets`：指定监控的目标，其实就是从哪儿拉取数据。本例中，Prometheus 会从http://172.20.10.12:9100/metrics上拉取数据。
+
+> Prometheus 可以在运行时自动加载配置，启动时需要添加：`--web.enable-lifecycle`。
+
+启动 Prometheus 服务：
+
+```shell
+[root@centos prometheus-2.55.1]# nohup ./prometheus --config.file=prometheus.yml > ./prometheus.log 2>&1 &
+```
+
+页面访问：http://172.20.10.12:9090/
+
+
+
+## Node Exporter 安装
+
+在 Prometheus 的架构设计中，Prometheus Server 主要负责数据的收集，存储并且对外提供数据查询支持，而实际的监控样本数据的收集则是由 Exporter 完成。因此，为了能够监控到某些东西，如主机的 CPU 使用率，我们需要使用到 Exporter，Prometheus 周期性的从 Exporter 暴露的 HTTP 服务地址（通常是/metrics）拉取监控样本数据。
+
+Exporter 是一个相对开放的概念，其可以是一个独立运行的程序独立于监控目标以外，也可以是直接内置在监控目标中，只要能够向 Prometheus 提供标准格式的监控样本数据即可。
+
+为了能够采集到主机的运行指标如 CPU, 内存，磁盘等信息，我们可以使用`Node Exporter`。Node Exporter 同样采用 Golang 编写，并且不存在任何的第三方依赖，只需要下载，解压即可运行。
+
+Noder Exporter 下载：
+
+<img src="prometheus-grafana/image-20241111231603976.png" alt="image-20241111231603976" style="zoom:80%;" />
+
+将下载的二进制包上传到服务器后，解压缩：
+
+```shell
 # 解压 node_exporter
 ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud/software$ tar -zxvf node_exporter-1.8.2.linux-amd64.tar.gz -C /zeloud/server/
 node_exporter-1.8.2.linux-amd64/
@@ -183,8 +256,10 @@ ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud/server$ mv prometheus-2.55.1.linux-amd6
 ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud/server$ mv node_exporter-1.8.2.linux-amd64/ node_exporter-1.8.2
 ```
 
-修改配置文件 prometheus.yml：
+启动 Noder Exporter 服务：
 
 ```shell
+[zeloud@centos node_exporter-1.8.2]$ nohup ./node_exporter > ./noder_exporter.log 2>&1 &
 ```
 
+页面访问：http://172.20.10.12:9100/
