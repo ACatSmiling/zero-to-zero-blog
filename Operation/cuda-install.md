@@ -2,6 +2,10 @@
 >
 > *`Since: 2024-11-13`*
 
+`CUDA（Compute Unified Device Architecture）`：是 NVIDIA 推出的一种并行计算平台和编程模型，它允许开发者利用 NVIDIA GPU（图形处理器）的强大计算能力进行通用计算，而不仅仅局限于图形处理。简单来说，CUDA 提供了一种方式，让程序员可以像编写 CPU 程序一样来编写能够在 GPU 上高效运行的程序。
+
+安装步骤：
+
 1. 根据操作系统版本和 GPU 型号等，下载对应的 cuda 驱动，下载地址：https://developer.nvidia.com/cuda-downloads
 
    ![image-20241114230828037](cuda-install/image-20241114230828037.png)
