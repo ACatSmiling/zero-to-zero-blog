@@ -1,10 +1,10 @@
-> *`Author: ACatSmiling`*
+﻿> *`Author: ACatSmiling`*
 >
 > *`Since: 2024-11-13`*
 
 1. 根据操作系统版本和 GPU 型号等，下载对应的 cuda 驱动，下载地址：https://developer.nvidia.com/cuda-downloads
 
-   ![image-20241114230828037](cuda-install/image-20241114230828037.png)
+   ![image-20241114230828037](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241114230904497-934453294.png)
 
 2. 检查服务器 GPU 识别情况，确保 GPU 卡能够完全识别，如不能识别，需要进行重新插拔、对调测试等步骤进行硬件排查。
 
@@ -117,9 +117,9 @@
    [root@desong-gpu-wushan ~]# ./cuda_12.2.0_535.54.03_linux.run --no-opengl-libs
    ```
 
-   ![image-20241113164756822](cuda-install/image-20241113164756822.png)
+   ![image-20241113164756822](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241114230904088-646546241.png)
 
-   ![image-20241113164802852](cuda-install/image-20241113164802852.png)
+   ![image-20241113164802852](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241114230903524-1557332557.png)
 
    - 默认全部安装，如果已经安装过 GPU 驱动，则取消 Driver 选项的勾选。
 
