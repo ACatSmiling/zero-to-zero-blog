@@ -263,3 +263,12 @@ ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud/server$ mv node_exporter-1.8.2.linux-am
 ```
 
 页面访问：http://172.20.10.12:9100/
+
+## Grafana 安装
+
+官网：https://grafana.com/
+
+下载地址：https://grafana.com/grafana/download
+
+grafana 是一款采用 Go 语言编写的开源应用，主要用于大规模指标数据的可视化展现，是网络架构和应用分析中最流行的时序数据展示工具，目前已经支持绝大部分常用的时序数据库。
+
