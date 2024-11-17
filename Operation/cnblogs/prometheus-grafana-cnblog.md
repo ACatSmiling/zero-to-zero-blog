@@ -1,10 +1,10 @@
-> `Author: ACatSmiling`
+﻿> `Author: ACatSmiling`
 >
 > `Since: 2024-11-11`
 
 ## Prometheus 的架构
 
-![image-20241111225341363](prometheus-grafana/image-20241111225341363.png)
+![image-20241111225341363](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130848035-335095957.png)
 
 **架构理解**：Prometheus 既然设计为一个维度存储模型，可以把它理解为一个 OLAP 系统。
 
@@ -45,11 +45,11 @@
 
 下载地址：https://prometheus.io/download/
 
-![image-20241111231441005](prometheus-grafana/image-20241111231441005.png)
+![image-20241111231441005](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130847773-511306923.png)
 
 Prometheus 下载：
 
-![image-20241111231317708](prometheus-grafana/image-20241111231317708.png)
+![image-20241111231317708](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130847421-1586925132.png)
 
 将下载的二进制包上传到服务器后，解压缩：
 
@@ -137,7 +137,7 @@ ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud$ nohup ./prometheus --config.file=prome
 
 页面访问：http://192.168.1.30:9090/
 
-![image-20241116230136055](prometheus-grafana/image-20241116230136055.png)
+![image-20241116230136055](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130847120-407109284.png)
 
 设置开机自启：
 
@@ -236,7 +236,7 @@ Exporter 是一个相对开放的概念，其可以是一个独立运行的程�
 
 Noder Exporter 下载：
 
-![image-20241111231603976](prometheus-grafana/image-20241111231603976.png)
+![image-20241111231603976](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130846840-1290362440.png)
 
 将下载的二进制包上传到服务器后，解压缩：
 
@@ -260,7 +260,7 @@ ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud/server$ nohup ./node_exporter > ./noder
 
 页面访问：http://192.168.1.30:9100/
 
-![image-20241116230239759](prometheus-grafana/image-20241116230239759.png)
+![image-20241116230239759](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130846572-126923373.png)
 
 设置为开机自启：
 
@@ -289,7 +289,7 @@ ecs-user@iZgc70tmn4wtnfbbjzjqyaZ:/zeloud$ systemctl status node_exporter.service
 
 下载地址：https://grafana.com/grafana/download
 
-![image-20241117092754151](prometheus-grafana/image-20241117092754151.png)
+![image-20241117092754151](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130846244-287489896.png)
 
 grafana 是一款采用 Go 语言编写的开源应用，主要用于大规模指标数据的可视化展现，是网络架构和应用分析中最流行的时序数据展示工具，目前已经支持绝大部分常用的时序数据库。
 
@@ -368,24 +368,24 @@ Nov 17 11:23:47 centos systemd[1]: [/usr/lib/systemd/system/grafana-server.servi
 
 页面访问：http://192.168.1.30:3000/，默认账户：admin/admin
 
-![image-20241117112927335](prometheus-grafana/image-20241117112927335.png)
+![image-20241117112927335](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130845797-400546511.png)
 
-![image-20241117112904309](prometheus-grafana/image-20241117112904309.png)
+![image-20241117112904309](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130845318-732758745.png)
 
 设置 Data Source：
-![image-20241117113216996](prometheus-grafana/image-20241117113216996.png)
+![image-20241117113216996](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130844999-1714879620.png)
 
-![image-20241117113245582](prometheus-grafana/image-20241117113245582.png)
+![image-20241117113245582](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130844665-528962778.png)
 
 可以自行创建 Dshboards，也可以到 https://grafana.com/grafana/dashboards/ 下载需要的模板：
 
-![image-20241117113715422](prometheus-grafana/image-20241117113715422.png)
+![image-20241117113715422](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130844250-1128601062.png)
 
-![image-20241117113747601](prometheus-grafana/image-20241117113747601.png)
+![image-20241117113747601](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130843660-666170060.png)
 
 导入模板，然后查看效果：
 
-![image-20241117113858132](prometheus-grafana/image-20241117113858132.png)
+![image-20241117113858132](https://img2023.cnblogs.com/blog/3488201/202411/3488201-20241117130843127-1185758078.png)
 
 ## 原文连接
 
