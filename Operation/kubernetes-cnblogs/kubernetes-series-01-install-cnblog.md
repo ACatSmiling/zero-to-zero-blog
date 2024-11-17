@@ -263,6 +263,14 @@ vm.swappiness = 0
 * Applying /etc/sysctl.conf ...
 ```
 
+- 如果提示 "cannot stat /proc/sys/net/bridge/bridge-nf-call-ip6tables: 没有那个文件或目录"，则执行`modprobe br_netfilter`。
+- 这些内核参数，对于 k8s 集群的运行是非常重要的，它们调整了系统的网络行为、内存管理等方面。
+  - `net.ipv4.ip_forward = 1`：**这个参数启用了 IP 转发。**在 k8s 集群中，节点之间经常需要相互转发网络流量，尤其是在 Pod 之间以及 Pod 与集群外部之间。启用 IP 转发，允许节点上的内核将接收到的数据包转发到另一个网络接口，这对于 k8s 的网络模型（如 CNI 插件）是必需的。
+  - `net.bridge.bridge-nf-call-ip6tables = 1`和`net.bridge.bridge-nf-call-iptables = 1`：**这两个参数是关于网络桥接和 iptables（或 ip6tables）的交互。**它们告诉内核，在将数据包通过桥接接口发送之前，应该通过 iptables（IPv4）或 ip6tables（IPv6）的规则链。这对于实现 k8s 的网络策略（如网络隔离、访问控制等）非常重要，因为这些策略通常是通过 iptables 规则来实现的。
+  - `vm.swappiness = 0`：**这个参数控制了内核使用交换空间（swap space）的倾向性。**设置为 0 意味着内核将尽量避免使用交换空间，而是尽可能地将内存中的数据保留在物理内存中。这对于 k8s 集群中的节点来说是有益的，因为减少交换活动可以提高系统的整体性能和稳定性。在 k8s 中，节点上的 Pod 可能会因为内存压力而被驱逐（evicted），但如果系统频繁使用交换空间，这可能会导致性能下降和不必要的 Pod 驱逐。
+- 虽然这些内核参数配置在大多数情况下都是有益的，但具体是否应用它们以及如何调整它们的值，可能还需要根据具体的环境和需求来决定。例如，在某些情况下，可能会希望稍微增加 vm.swappiness 的值，以便在系统内存不足时提供更多的缓冲空间。
+- **注意：这些内核参数的设置，并不特定于某个 Linux 发行版，而是与 Linux 内核本身相关。因此，无论是在 CentOS、Ubuntu，还是其他支持这些参数的 Linux 发行版上，这些配置都是有效的。**
+
 >```shell
 >$ cat > /etc/sysctl.d/k8s.conf << EOF
 >net.ipv4.ip_forward = 1
