@@ -1,4 +1,4 @@
-> `Author: ACatSmiling`
+﻿> `Author: ACatSmiling`
 >
 > `Since: 2024-12-07`
 
@@ -63,7 +63,7 @@ You can test that everything is set up by executing:
 
 设置环境变量：
 
-![image-20241207191209698](python-series-10-poetry/image-20241207191209698.png)
+![image-20241207191209698](https://img2023.cnblogs.com/blog/3488201/202412/3488201-20241210002612087-757856907.png)
 
 验证：`poetry --version`。
 
@@ -255,7 +255,7 @@ Writing lock file
 
 >当安装 flask 后，项目结构也发生了变化：
 >
->![image-20241207232346977](python-series-10-poetry/image-20241207232346977.png)
+>![image-20241207232346977](https://img2023.cnblogs.com/blog/3488201/202412/3488201-20241210002611430-315920474.png)
 >
 >pyproject.toml 文件的变化：
 >
