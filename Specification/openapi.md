@@ -279,7 +279,7 @@
 
 
 
-## Path Item Object
+### Path Item Object
 
 
 
@@ -499,6 +499,42 @@
 `Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
 
 > 有关属性的更多信息，查看 [JSON Schema Core](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 和 [JSON Schema Validation](https://tools.ietf.org/html/draft-bhutton-json-schema-validation-00)。除非另有说明，否则属性定义均遵循 JSON Schema 的定义，不添加任何其他语义。
+
+
+
+### Response Object
+
+
+
+### Parameter Object
+
+
+
+### Example Object
+
+
+
+### Request Body Object
+
+
+
+### Header Object
+
+
+
+### Security Scheme Object
+
+
+
+### Link Object
+
+
+
+### Callback Object
+
+
+
+### Path Item Object
 
 
 
