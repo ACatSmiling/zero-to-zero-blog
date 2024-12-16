@@ -8,6 +8,8 @@
 
 3.0.0 版本中文翻译参考：https://openapi.apifox.cn/
 
+在线编辑：https://editor.swagger.io/
+
 **OpenAPI 文档支持 JSON 和 YAML 两种格式，推荐将 OpenAPI 文档命名为 openapi.json 或 openapi.yaml。**
 
 ## OpenAPI Object
@@ -29,7 +31,7 @@
 
 ## Info Object
 
-`Info Object`：提供了 API 的**元数据信息**。包含以下字段：
+`Info Object`：提供了 OpenAPI 的**元数据信息**。包含以下字段：
 
 | Field Name     |                             Type                             | Description                                                  |
 | -------------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
@@ -84,7 +86,7 @@
 
 ### Contact Object
 
-`Contact Object`：所公开的 API 的**联系人信息**。包含以下字段：
+`Contact Object`：OpenAPI 的**联系人信息**。包含以下字段：
 
 | Field Name |   Type   | Description                                                  |
 | ---------- | :------: | ------------------------------------------------------------ |
@@ -116,7 +118,7 @@
 
 ### License Object
 
-`License Object`：所公开 API 的**许可证信息**。包含以下字段：
+`License Object`：OpenAPI 的**许可证信息**。包含以下字段：
 
 | Field Name |   Type   | Description                                                  |
 | ---------- | :------: | ------------------------------------------------------------ |
@@ -493,6 +495,10 @@
   ```
 
 ### Schema Object
+
+`Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
+
+> 有关属性的更多信息，查看 [JSON Schema Core](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 和 [JSON Schema Validation](https://tools.ietf.org/html/draft-bhutton-json-schema-validation-00)。除非另有说明，否则属性定义均遵循 JSON Schema 的定义，不添加任何其他语义。
 
 
 
