@@ -2,6 +2,8 @@
 >
 > *`Since: 2024-12-14`*
 
+## 概述
+
 **`OpenAPI 规范`**：OpenAPI Specification，简称 OAS，原称 **Swagger 规范**，是种机器可读的接口描述语言规范，作用是描述、生成、使用和可视化 Web 服务。其前身是 Swagger 框架的一部分，2015年成为独立项目，由 Linux 基金会的开源合作项目 OpenAPI Initiative 监督。目前最新的 OpenAPI 规范版本是 3.1.0，该版本于 2021 年 2 月 15 日发布。
 
 3.1.0 版本官网：https://swagger.io/specification/
@@ -12,14 +14,16 @@
 
 **OpenAPI 文档支持 JSON 和 YAML 两种格式，推荐将 OpenAPI 文档命名为 openapi.json 或 openapi.yaml。**
 
-## OpenAPI Object
+## 框架
+
+### OpenAPI Object
 
 `OpenAPI Object`：是 [OpenAPI document](https://openapi.apifox.cn/#oasDocument) 的**根文档对象**。包含以下字段：
 
 | Field Name        |                             Type                             | Description                                                  |
 | ----------------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
-| openapi           |                           `string`                           | **REQUIRED**. This string MUST be the [version number](https://swagger.io/specification/#versions) of the OpenAPI Specification that the OpenAPI document uses. The `openapi` field SHOULD be used by tooling to interpret the OpenAPI document. This is *not* related to the API [`info.version`](https://swagger.io/specification/#info-version) string. |
-| info              | [Info Object](https://swagger.io/specification/#info-object) | **REQUIRED**. Provides metadata about the API. The metadata MAY be used by tooling as required. |
+| openapi           |                           `string`                           | **`REQUIRED`**. This string MUST be the [version number](https://swagger.io/specification/#versions) of the OpenAPI Specification that the OpenAPI document uses. The `openapi` field SHOULD be used by tooling to interpret the OpenAPI document. This is *not* related to the API [`info.version`](https://swagger.io/specification/#info-version) string. |
+| info              | [Info Object](https://swagger.io/specification/#info-object) | **`REQUIRED`**. Provides metadata about the API. The metadata MAY be used by tooling as required. |
 | jsonSchemaDialect |                           `string`                           | The default value for the `$schema` keyword within [Schema Objects](https://swagger.io/specification/#schema-object) contained within this OAS document. This MUST be in the form of a URI. |
 | servers           | [Server Object](https://swagger.io/specification/#server-object) | An array of Server Objects, which provide connectivity information to a target server. If the `servers` property is not provided, or is an empty array, the default value would be a [Server Object](https://swagger.io/specification/#server-object) with a [url](https://swagger.io/specification/#server-url) value of `/`. |
 | paths             | [Paths Object](https://swagger.io/specification/#paths-object) | The available paths and operations for the API.              |
@@ -29,19 +33,21 @@
 | tags              |  [Tag Object](https://swagger.io/specification/#tag-object)  | A list of tags used by the document with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. Not all tags that are used by the [Operation Object](https://swagger.io/specification/#operation-object) must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. Each tag name in the list MUST be unique. |
 | externalDocs      | [External Documentation Object](https://swagger.io/specification/#external-documentation-object) | Additional external documentation.                           |
 
-## Info Object
+## 脉络
+
+### Info Object
 
 `Info Object`：提供了 OpenAPI 的**元数据信息**。包含以下字段：
 
 | Field Name     |                             Type                             | Description                                                  |
 | -------------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
-| title          |                           `string`                           | **REQUIRED**. The title of the API.                          |
+| title          |                           `string`                           | **`REQUIRED`**. The title of the API.                        |
 | summary        |                           `string`                           | A short summary of the API.                                  |
 | description    |                           `string`                           | A description of the API. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
 | termsOfService |                           `string`                           | A URL to the Terms of Service for the API. This MUST be in the form of a URL. |
 | contact        | [Contact Object](https://swagger.io/specification/#contact-object) | The contact information for the exposed API.                 |
 | license        | [License Object](https://swagger.io/specification/#license-object) | The license information for the exposed API.                 |
-| version        |                           `string`                           | **REQUIRED**. The version of the OpenAPI document (which is distinct from the [OpenAPI Specification version](https://swagger.io/specification/#oas-version) or the API implementation version). |
+| version        |                           `string`                           | **`REQUIRED`**. The version of the OpenAPI document (which is distinct from the [OpenAPI Specification version](https://swagger.io/specification/#oas-version) or the API implementation version). |
 
 示例：
 
@@ -84,75 +90,13 @@
   ```
   
 
-### Contact Object
-
-`Contact Object`：OpenAPI 的**联系人信息**。包含以下字段：
-
-| Field Name |   Type   | Description                                                  |
-| ---------- | :------: | ------------------------------------------------------------ |
-| name       | `string` | The identifying name of the contact person/organization.     |
-| url        | `string` | The URL pointing to the contact information. This MUST be in the form of a URL. |
-| email      | `string` | The email address of the contact person/organization. This MUST be in the form of an email address. |
-
-- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
-
-示例：
-
-- json 格式：
-
-  ```json
-  {
-    "name": "API Support",
-    "url": "https://www.example.com/support",
-    "email": "support@example.com"
-  }
-  ```
-
-- yaml 格式：
-
-  ```yaml
-  name: API Support
-  url: https://www.example.com/support
-  email: support@example.com
-  ```
-
-### License Object
-
-`License Object`：OpenAPI 的**许可证信息**。包含以下字段：
-
-| Field Name |   Type   | Description                                                  |
-| ---------- | :------: | ------------------------------------------------------------ |
-| name       | `string` | **REQUIRED**. The license name used for the API.             |
-| identifier | `string` | An [SPDX](https://spdx.org/licenses/) license expression for the API. The `identifier` field is mutually exclusive of the `url` field. |
-| url        | `string` | A URL to the license used for the API. This MUST be in the form of a URL. The `url` field is mutually exclusive of the `identifier` field. |
-
-- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
-
-示例：
-
-- json 格式：
-
-  ```json
-  {
-    "name": "Apache 2.0",
-    "identifier": "Apache-2.0"
-  }
-  ```
-
-- yaml 格式：
-
-  ```yaml
-  name: Apache 2.0
-  identifier: Apache-2.0
-  ```
-
-## Server Object
+### Server Object
 
 `Server Object`：表示一个**服务器的对象**。包含以下字段：
 
 | Field Name  |                             Type                             | Description                                                  |
 | ----------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
-| url         |                           `string`                           | **REQUIRED**. A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in `{`brackets`}`. |
+| url         |                           `string`                           | **`REQUIRED`**. A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in `{`brackets`}`. |
 | description |                           `string`                           | An optional string describing the host designated by the URL. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
 | variables   | Map[`string`, [Server Variable Object](https://swagger.io/specification/#server-variable-object)] | A map between a variable name and its value. The value is used for substitution in the server's URL template. |
 
@@ -263,31 +207,200 @@
         default: v2
   ```
 
-### Server Variable Object
+### Paths Object
 
-`Server Variable Object`：代表服务器变量的对象，用于服务器 URL 模板替换。包含以下字段：
+`Paths Object`：定义**各个端点及其操作的相对路径**。此处指定的路径会和 [Server Object](https://swagger.io/specification/#server-object) 内指定的 URL 地址组成完整的URL地址，路径可以为空，这依赖于 [Access Control List (ACL) constraints](https://swagger.io/specification/#security-filtering) 的设置。包含以下字段：
 
-| Field Name  |    Type    | Description                                                  |
-| ----------- | :--------: | ------------------------------------------------------------ |
-| enum        | [`string`] | An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty. |
-| default     |  `string`  | **REQUIRED**. The default value to use for substitution, which SHALL be sent if an alternate value is *not* supplied. Note this behavior is different than the [Schema Object's](https://swagger.io/specification/#schema-object) treatment of default values, because in those cases parameter values are optional. If the [`enum`](https://swagger.io/specification/#server-variable-enum) is defined, the value MUST exist in the enum's values. |
-| description |  `string`  | An optional description for the server variable. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| Field Pattern |                             Type                             | Description                                                  |
+| ------------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| /{path}       | [Path Item Object](https://swagger.io/specification/#path-item-object) | A relative path to an individual endpoint. The field name MUST begin with a forward slash (`/`). The path is **appended** (no relative URL resolution) to the expanded URL from the [Server Object](https://swagger.io/specification/#server-object)'s `url` field in order to construct the full URL. [Path templating](https://swagger.io/specification/#path-templating) is allowed. When matching URLs, concrete (non-templated) paths would be matched before their templated counterparts. Templated paths with the same hierarchy but different templated names MUST NOT exist as they are identical. In case of ambiguous matching, it's up to the tooling to decide which one to use. |
 
 - 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
 
-## Paths Object
+示例：
 
+- json 格式：
 
+  ```json
+  {
+    "/pets": {
+      "get": {
+        "description": "Returns all pets from the system that the user has access to",
+        "responses": {
+          "200": {
+            "description": "A list of pets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/pet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  /pets:
+    get:
+      description: Returns all pets from the system that the user has access to
+      responses:
+        '200':
+          description: A list of pets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/pet'
+  ```
+
+#### Path Templating Matching
+
+假设有以下路径，明确定义的路径 "/pets/mine" 会被优先匹配：
+
+```tex
+/pets/{petId}
+/pets/mine
+```
+
+以下路径被认为是等价且无效的：
+
+```tex
+/pets/{petId}
+/pets/{name}
+```
+
+以下路径会产生歧义：
+
+```tex
+/{entity}/me
+/books/{id}
+```
 
 ### Path Item Object
 
+`Path Item Object`：描述**对一个路径可执行的有效操作**。依赖于 [ACL constraints](https://swagger.io/specification/#security-filtering) 的设置，一个 Path Item 可能是一个空对象，文档的读者仍然可以看到这个路径，但是他们无法了解到对这个路径可用的任何操作和参数。包含以下字段：
+
+| Field Name  |                             Type                             | Description                                                  |
+| ----------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| $ref        |                           `string`                           | Allows for a referenced definition of this path item. The value MUST be in the form of a URI, and the referenced structure MUST be in the form of a [Path Item Object](https://swagger.io/specification/#path-item-object). In case a Path Item Object field appears both in the defined object and the referenced object, the behavior is undefined. See the rules for resolving [Relative References](https://swagger.io/specification/#relative-references-in-api-description-uris).  ***Note:** The behavior of `$ref` with adjacent properties is likely to change in future versions of this specification to bring it into closer alignment with the behavior of the [Reference Object](https://swagger.io/specification/#reference-object).* |
+| summary     |                           `string`                           | An optional string summary, intended to apply to all operations in this path. |
+| description |                           `string`                           | An optional string description, intended to apply to all operations in this path. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| get         | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a GET operation on this path.                |
+| put         | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a PUT operation on this path.                |
+| post        | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a POST operation on this path.               |
+| delete      | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a DELETE operation on this path.             |
+| options     | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a OPTIONS operation on this path.            |
+| head        | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a HEAD operation on this path.               |
+| patch       | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a PATCH operation on this path.              |
+| trace       | [Operation Object](https://swagger.io/specification/#operation-object) | A definition of a TRACE operation on this path.              |
+| servers     | [[Server Object](https://swagger.io/specification/#server-object)] | An alternative `servers` array to service all operations in this path. If a `servers` array is specified at the [OpenAPI Object](https://swagger.io/specification/#oas-servers) level, it will be overridden by this value. |
+| parameters  | [[Parameter Object](https://swagger.io/specification/#parameter-object) \| [Reference Object](https://swagger.io/specification/#reference-object)] | A list of parameters that are applicable for all the operations described under this path. These parameters can be overridden at the operation level, but cannot be removed there. The list MUST NOT include duplicated parameters. A unique parameter is defined by a combination of a [name](https://swagger.io/specification/#parameter-name) and [location](https://swagger.io/specification/#parameter-in). The list can use the [Reference Object](https://swagger.io/specification/#reference-object) to link to parameters that are defined in the [OpenAPI Object's `components.parameters`](https://swagger.io/specification/#components-parameters). |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "get": {
+      "description": "Returns pets based on ID",
+      "summary": "Find pets by ID",
+      "operationId": "getPetsById",
+      "responses": {
+        "200": {
+          "description": "pet response",
+          "content": {
+            "*/*": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          }
+        },
+        "default": {
+          "description": "error payload",
+          "content": {
+            "text/html": {
+              "schema": {
+                "$ref": "#/components/schemas/ErrorModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "description": "ID of pet to use",
+        "required": true,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "style": "simple"
+      }
+    ]
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  get:
+    description: Returns pets based on ID
+    summary: Find pets by ID
+    operationId: getPetsById
+    responses:
+      '200':
+        description: pet response
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Pet'
+      default:
+        description: error payload
+        content:
+          text/html:
+            schema:
+              $ref: '#/components/schemas/ErrorModel'
+  parameters:
+    - name: id
+      in: path
+      description: ID of pet to use
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+      style: simple
+  ```
+
+### Reference Object
 
 
-## Reference Object
 
-
-
-## Components Object
+### Components Object
 
 `Components Object`：包含 OpenAPI 规范固定的各种可重用组件，当没有被其他对象引用时，在这里定义定义的组件不会产生任何效果。包含以下字段：
 
@@ -494,6 +607,96 @@
               read:pets: read your pets
   ```
 
+### Security Requirement Object
+
+
+
+### Tag Object
+
+
+
+## 组成
+
+### Contact Object
+
+`Contact Object`：OpenAPI 的**联系人信息**。包含以下字段：
+
+| Field Name |   Type   | Description                                                  |
+| ---------- | :------: | ------------------------------------------------------------ |
+| name       | `string` | The identifying name of the contact person/organization.     |
+| url        | `string` | The URL pointing to the contact information. This MUST be in the form of a URL. |
+| email      | `string` | The email address of the contact person/organization. This MUST be in the form of an email address. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "name": "API Support",
+    "url": "https://www.example.com/support",
+    "email": "support@example.com"
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  name: API Support
+  url: https://www.example.com/support
+  email: support@example.com
+  ```
+
+### License Object
+
+`License Object`：OpenAPI 的**许可证信息**。包含以下字段：
+
+| Field Name |   Type   | Description                                                  |
+| ---------- | :------: | ------------------------------------------------------------ |
+| name       | `string` | **REQUIRED**. The license name used for the API.             |
+| identifier | `string` | An [SPDX](https://spdx.org/licenses/) license expression for the API. The `identifier` field is mutually exclusive of the `url` field. |
+| url        | `string` | A URL to the license used for the API. This MUST be in the form of a URL. The `url` field is mutually exclusive of the `identifier` field. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "name": "Apache 2.0",
+    "identifier": "Apache-2.0"
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  name: Apache 2.0
+  identifier: Apache-2.0
+  ```
+
+### Server Variable Object
+
+`Server Variable Object`：代表服务器变量的对象，用于服务器 URL 模板替换。包含以下字段：
+
+| Field Name  |    Type    | Description                                                  |
+| ----------- | :--------: | ------------------------------------------------------------ |
+| enum        | [`string`] | An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty. |
+| default     |  `string`  | **REQUIRED**. The default value to use for substitution, which SHALL be sent if an alternate value is *not* supplied. Note this behavior is different than the [Schema Object's](https://swagger.io/specification/#schema-object) treatment of default values, because in those cases parameter values are optional. If the [`enum`](https://swagger.io/specification/#server-variable-enum) is defined, the value MUST exist in the enum's values. |
+| description |  `string`  | An optional description for the server variable. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+
+
+
+
+
+
 ### Schema Object
 
 `Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
@@ -538,11 +741,7 @@
 
 
 
-## Security Requirement Object
-
-
-
-## Tag Object
+## 
 
 
 
