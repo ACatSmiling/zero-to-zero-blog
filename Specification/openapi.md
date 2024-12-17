@@ -396,10 +396,6 @@
       style: simple
   ```
 
-### Reference Object
-
-
-
 ### Components Object
 
 `Components Object`：包含 OpenAPI 规范固定的各种可重用组件，当没有被其他对象引用时，在这里定义定义的组件不会产生任何效果。包含以下字段：
@@ -615,6 +611,10 @@
 
 
 
+### Reference Object
+
+
+
 ## 组成
 
 ### Contact Object
@@ -681,7 +681,7 @@
 
 ### Server Variable Object
 
-`Server Variable Object`：代表服务器变量的对象，用于服务器 URL 模板替换。包含以下字段：
+`Server Variable Object`：代表服务器变量的对象，**用于服务器 URL 模板替换**。包含以下字段：
 
 | Field Name  |    Type    | Description                                                  |
 | ----------- | :--------: | ------------------------------------------------------------ |
@@ -691,11 +691,140 @@
 
 - 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
 
+### Operation Object
+
+`Operation Object`：描述对路径的某个操作。包含以下字段：
+
+| Field Name   |                             Type                             | Description                                                  |
+| ------------ | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| tags         |                          [`string`]                          | A list of tags for API documentation control. Tags can be used for logical grouping of operations by resources or any other qualifier. |
+| summary      |                           `string`                           | A short summary of what the operation does.                  |
+| description  |                           `string`                           | A verbose explanation of the operation behavior. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| externalDocs | [External Documentation Object](https://swagger.io/specification/#external-documentation-object) | Additional external documentation for this operation.        |
+| operationId  |                           `string`                           | Unique string used to identify the operation. The id MUST be unique among all operations described in the API. The operationId value is **case-sensitive**. Tools and libraries MAY use the operationId to uniquely identify an operation, therefore, it is RECOMMENDED to follow common programming naming conventions. |
+| parameters   | [[Parameter Object](https://swagger.io/specification/#parameter-object) \| [Reference Object](https://swagger.io/specification/#reference-object)] | A list of parameters that are applicable for this operation. If a parameter is already defined at the [Path Item](https://swagger.io/specification/#path-item-parameters), the new definition will override it but can never remove it. The list MUST NOT include duplicated parameters. A unique parameter is defined by a combination of a [name](https://swagger.io/specification/#parameter-name) and [location](https://swagger.io/specification/#parameter-in). The list can use the [Reference Object](https://swagger.io/specification/#reference-object) to link to parameters that are defined in the [OpenAPI Object's `components.parameters`](https://swagger.io/specification/#components-parameters). |
+| requestBody  | [Request Body Object](https://swagger.io/specification/#request-body-object) \| [Reference Object](https://swagger.io/specification/#reference-object) | The request body applicable for this operation. The `requestBody` is fully supported in HTTP methods where the HTTP 1.1 specification [RFC7231](https://tools.ietf.org/html/rfc7231#section-4.3.1) has explicitly defined semantics for request bodies. In other cases where the HTTP spec is vague (such as [GET](https://tools.ietf.org/html/rfc7231#section-4.3.1), [HEAD](https://tools.ietf.org/html/rfc7231#section-4.3.2) and [DELETE](https://tools.ietf.org/html/rfc7231#section-4.3.5)), `requestBody` is permitted but does not have well-defined semantics and SHOULD be avoided if possible. |
+| responses    | [Responses Object](https://swagger.io/specification/#responses-object) | The list of possible responses as they are returned from executing this operation. |
+| callbacks    | Map[`string`, [Callback Object](https://swagger.io/specification/#callback-object) \| [Reference Object](https://swagger.io/specification/#reference-object)] | A map of possible out-of band callbacks related to the parent operation. The key is a unique identifier for the Callback Object. Each value in the map is a [Callback Object](https://swagger.io/specification/#callback-object) that describes a request that may be initiated by the API provider and the expected responses. |
+| deprecated   |                          `boolean`                           | Declares this operation to be deprecated. Consumers SHOULD refrain from usage of the declared operation. Default value is `false`. |
+| security     | [[Security Requirement Object](https://swagger.io/specification/#security-requirement-object)] | A declaration of which security mechanisms can be used for this operation. The list of values includes alternative Security Requirement Objects that can be used. Only one of the Security Requirement Objects need to be satisfied to authorize a request. To make security optional, an empty security requirement (`{}`) can be included in the array. This definition overrides any declared top-level [`security`](https://swagger.io/specification/#oas-security). To remove a top-level security declaration, an empty array can be used. |
+| servers      | [[Server Object](https://swagger.io/specification/#server-object)] | An alternative `servers` array to service this operation. If a `servers` array is specified at the [Path Item Object](https://swagger.io/specification/#path-item-servers) or [OpenAPI Object](https://swagger.io/specification/#oas-servers) level, it will be overridden by this value. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
 
 
+示例：
 
+- json 格式：
 
+  ```json
+  {
+    "tags": ["pet"],
+    "summary": "Updates a pet in the store with form data",
+    "operationId": "updatePetWithForm",
+    "parameters": [
+      {
+        "name": "petId",
+        "in": "path",
+        "description": "ID of pet that needs to be updated",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/x-www-form-urlencoded": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Updated name of the pet",
+                "type": "string"
+              },
+              "status": {
+                "description": "Updated status of the pet",
+                "type": "string"
+              }
+            },
+            "required": ["status"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Pet updated.",
+        "content": {
+          "application/json": {},
+          "application/xml": {}
+        }
+      },
+      "405": {
+        "description": "Method Not Allowed",
+        "content": {
+          "application/json": {},
+          "application/xml": {}
+        }
+      }
+    },
+    "security": [
+      {
+        "petstore_auth": ["write:pets", "read:pets"]
+      }
+    ]
+  }
+  ```
 
+- yaml 格式：
+
+  ```yaml
+  tags:
+    - pet
+  summary: Updates a pet in the store with form data
+  operationId: updatePetWithForm
+  parameters:
+    - name: petId
+      in: path
+      description: ID of pet that needs to be updated
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/x-www-form-urlencoded:
+        schema:
+          type: object
+          properties:
+            name:
+              description: Updated name of the pet
+              type: string
+            status:
+              description: Updated status of the pet
+              type: string
+          required:
+            - status
+  responses:
+    '200':
+      description: Pet updated.
+      content:
+        application/json: {}
+        application/xml: {}
+    '405':
+      description: Method Not Allowed
+      content:
+        application/json: {}
+        application/xml: {}
+  security:
+    - petstore_auth:
+        - write:pets
+        - read:pets
+  ```
+
+### Parameter Object
+
+`Parameter Object`：描述单个操作参数。
 
 ### Schema Object
 
@@ -708,8 +837,6 @@
 ### Response Object
 
 
-
-### Parameter Object
 
 
 
