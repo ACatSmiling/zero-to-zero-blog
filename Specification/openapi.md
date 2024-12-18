@@ -824,7 +824,26 @@
 
 ### Parameter Object
 
-`Parameter Object`：描述单个操作参数。
+`Parameter Object`：描述单个操作参数。通过[name](https://swagger.io/specification/#parameter-name) 和 [location](https://swagger.io/specification/#parameter-in) 的组合，唯一定义了一个 parameter。
+
+>有关百分比编码问题的详细研究，包括与 application/x-www-form-urlencoded 查询字符串格式的交互，请参见 [Appendix E](https://swagger.io/specification/#appendix-e-percent-encoding-and-form-media-types)。
+
+#### Parameter Locations
+
+`in`字段指定了四个可能的参数位置：
+
+- `path`：与 [Path Templating](https://swagger.io/specification/#path-templating) 一起使用时，**参数值实际上是操作 URL 的一部分**。 这不包括 API 的主机或基本路径。 例如，在 "/items/{itemId}" 中，path 参数对应的是 itemId。
+- `query`：**参数值会追加到 URL 中**。例如，在 "/items?id=####" 中，query 参数对应的是 id。
+- `header`：header 参数会作为**请求的自定义标头**。注意，[RFC7230](https://tools.ietf.org/html/rfc7230#section-3.2) 规定在，header 参数不区分大小写。
+- `cookie`：用于向 API 传递**特定的 cookie 值**。
+
+#### Examples
+
+
+
+### Request Body Object
+
+
 
 ### Schema Object
 
@@ -844,7 +863,7 @@
 
 
 
-### Request Body Object
+
 
 
 
