@@ -605,15 +605,15 @@
 
 ### Security Requirement Object
 
-
+`略，详见官网`。
 
 ### Tag Object
 
-
+`略，详见官网`。
 
 ### Reference Object
 
-
+`略，详见官网`。
 
 ## 组成
 
@@ -837,19 +837,263 @@
 - `header`：header 参数会作为**请求的自定义标头**。注意，[RFC7230](https://tools.ietf.org/html/rfc7230#section-3.2) 规定在，header 参数不区分大小写。
 - `cookie`：用于向 API 传递**特定的 cookie 值**。
 
+#### Fixed Fields
+
+parameter 参数的序列化规则有两种指定方式。Parameter Objects 必须包括`content`字段或`schema`字段，但不能同时包括，有关将各种类型的值转换为字符串的讨论，请参见 [Appendix B](https://swagger.io/specification/#appendix-b-data-type-conversion)。
+
+##### Common Fixed Fields
+
+包含以下字段，这些字段可用于`content`或`schema`：
+
+| Field Name      |   Type    | Description                                                  |
+| --------------- | :-------: | ------------------------------------------------------------ |
+| name            | `string`  | **`REQUIRED`**. The name of the parameter. Parameter names are *case sensitive*.If [`in`](https://swagger.io/specification/#parameter-in) is `"path"`, the `name` field MUST correspond to a template expression occurring within the [path](https://swagger.io/specification/#paths-path) field in the [Paths Object](https://swagger.io/specification/#paths-object). See [Path Templating](https://swagger.io/specification/#path-templating) for further information.If [`in`](https://swagger.io/specification/#parameter-in) is `"header"` and the `name` field is `"Accept"`, `"Content-Type"` or `"Authorization"`, the parameter definition SHALL be ignored.For all other cases, the `name` corresponds to the parameter name used by the [`in`](https://swagger.io/specification/#parameter-in) field. |
+| in              | `string`  | **`REQUIRED`**. The location of the parameter. Possible values are `"query"`, `"header"`, `"path"` or `"cookie"`. |
+| description     | `string`  | A brief description of the parameter. This could contain examples of use. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| required        | `boolean` | Determines whether this parameter is mandatory. If the [parameter location](https://swagger.io/specification/#parameter-in) is `"path"`, this field is **REQUIRED** and its value MUST be `true`. Otherwise, the field MAY be included and its default value is `false`. |
+| deprecated      | `boolean` | Specifies that a parameter is deprecated and SHOULD be transitioned out of usage. Default value is `false`. |
+| allowEmptyValue | `boolean` | If `true`, clients MAY pass a zero-length string value in place of parameters that would otherwise be omitted entirely, which the server SHOULD interpret as the parameter being unused. Default value is `false`. If [`style`](https://swagger.io/specification/#parameter-style) is used, and if [behavior is *n/a* (cannot be serialized)](https://swagger.io/specification/#style-examples), the value of `allowEmptyValue` SHALL be ignored. Interactions between this field and the parameter's [Schema Object](https://swagger.io/specification/#schema-object) are implementation-defined. This field is valid only for `query` parameters. Use of this field is NOT RECOMMENDED, and it is likely to be removed in a later revision. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+- 注意，如果 in 是 header，Cookie 作为 name 并没有被禁止，但这样定义 cookie 参数的效果是未定义的，请使用 in: "cookie" 代替。
+
+##### Fixed Fields for use with schema
+
+对于较简单的情况，[schema](https://swagger.io/specification/#parameter-schema) 和 [style](https://swagger.io/specification/#parameter-style) 可以描述 parameter 参数的结构和语法。当 example 或 examples 与 schema 字段一起提供时，example 应与指定的模式相匹配，并遵循规定的 parameter 参数序列化策略。example 字段和 examples 字段是互斥的，如果其中任何一个字段出现，都应覆盖 schema 中的任何 example。
+
+包含以下字段：
+
+| Field Name    |                             Type                             | Description                                                  |
+| ------------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| style         |                           `string`                           | Describes how the parameter value will be serialized depending on the type of the parameter value. Default values (based on value of `in`): for `"query"` - `"form"`; for `"path"` - `"simple"`; for `"header"` - `"simple"`; for `"cookie"` - `"form"`. |
+| explode       |                          `boolean`                           | When this is true, parameter values of type `array` or `object` generate separate parameters for each value of the array or key-value pair of the map. For other types of parameters this field has no effect. When [`style`](https://swagger.io/specification/#parameter-style) is `"form"`, the default value is `true`. For all other styles, the default value is `false`. Note that despite `false` being the default for `deepObject`, the combination of `false` with `deepObject` is undefined. |
+| allowReserved |                          `boolean`                           | When this is true, parameter values are serialized using reserved expansion, as defined by [RFC6570](https://datatracker.ietf.org/doc/html/rfc6570#section-3.2.3), which allows [RFC3986's reserved character set](https://datatracker.ietf.org/doc/html/rfc3986#section-2.2), as well as percent-encoded triples, to pass through unchanged, while still percent-encoding all other disallowed characters (including `%` outside of percent-encoded triples). Applications are still responsible for percent-encoding reserved characters that are [not allowed in the query string](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4) (`[`, `]`, `#`), or have a special meaning in `application/x-www-form-urlencoded` (`-`, `&`, `+`); see Appendices [C](https://swagger.io/specification/#appendix-c-using-rfc6570-based-serialization) and [E](https://swagger.io/specification/#appendix-e-percent-encoding-and-form-media-types) for details. This field only applies to parameters with an `in` value of `query`. The default value is `false`. |
+| schema        | [Schema Object](https://swagger.io/specification/#schema-object) | The schema defining the type used for the parameter.         |
+| example       |                             Any                              | Example of the parameter's potential value; see [Working With Examples](https://swagger.io/specification/#working-with-examples). |
+| examples      | Map[ `string`, [Example Object](https://swagger.io/specification/#example-object) \| [Reference Object](https://swagger.io/specification/#reference-object)] | Examples of the parameter's potentia                         |
+
+##### Fixed Fields for use with content
+
+对于更复杂的情况，content 字段可以定义 parameter 参数的 media type 以及 schema。在 in: "header" 和 in: "cookie" 两种模式下，content 推荐使用 text/plain，但 schema 字段不适用。
+
+包含以下字段：
+
+| Field Name |                             Type                             | Description                                                  |
+| ---------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| content    | Map[`string`, [Media Type Object](https://swagger.io/specification/#media-type-object)] | A map containing the representations for the parameter. The key is the media type and the value describes it. The map MUST only contain one entry. |
+
+#### Style Values
+
+为了支持简单参数序列化的常用方法，定义了一组 style 值：
+
+| `style`        | [`type`](https://swagger.io/specification/#data-types) | `in`              | Comments                                                     |
+| -------------- | ------------------------------------------------------ | ----------------- | ------------------------------------------------------------ |
+| matrix         | `primitive`, `array`, `object`                         | `path`            | Path-style parameters defined by [RFC6570](https://tools.ietf.org/html/rfc6570#section-3.2.7) |
+| label          | `primitive`, `array`, `object`                         | `path`            | Label style parameters defined by [RFC6570](https://tools.ietf.org/html/rfc6570#section-3.2.5) |
+| simple         | `primitive`, `array`, `object`                         | `path`, `header`  | Simple style parameters defined by [RFC6570](https://tools.ietf.org/html/rfc6570#section-3.2.2). This option replaces `collectionFormat` with a `csv` value from OpenAPI 2.0. |
+| form           | `primitive`, `array`, `object`                         | `query`, `cookie` | Form style parameters defined by [RFC6570](https://tools.ietf.org/html/rfc6570#section-3.2.8). This option replaces `collectionFormat` with a `csv` (when `explode` is false) or `multi` (when `explode` is true) value from OpenAPI 2.0. |
+| spaceDelimited | `array`, `object`                                      | `query`           | Space separated array values or object properties and values. This option replaces `collectionFormat` equal to `ssv` from OpenAPI 2.0. |
+| pipeDelimited  | `array`, `object`                                      | `query`           | Pipe separated array values or object properties and values. This option replaces `collectionFormat` equal to `pipes` from OpenAPI 2.0. |
+| deepObject     | `object`                                               | `query`           | Allows objects with scalar properties to be represented using form parameters. The representation of array or object properties is not defined. |
+
+示例，假设名为 color 的参数具有以下值之一：
+
+```tex
+string -> "blue"
+array -> ["blue", "black", "brown"]
+object -> { "R": 100, "G": 200, "B": 150 }
+```
+
+下表列出了每个值的不同序列化示例，与 example 或 examples 关键字一样。
+
+`略，详见官网`。
+
 #### Examples
 
+header 参数，包含一个 64 位整数数组：
 
+- json 格式：
 
-### Request Body Object
+  ```json
+  {
+    "name": "token",
+    "in": "header",
+    "description": "token to be passed as a header",
+    "required": true,
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "int64"
+      }
+    },
+    "style": "simple"
+  }
+  ```
 
+- yaml 格式：
 
+  ```yaml
+  name: token
+  in: header
+  description: token to be passed as a header
+  required: true
+  schema:
+    type: array
+    items:
+      type: integer
+      format: int64
+  style: simple
+  ```
+
+path 参数，使用 string 值：
+
+- json 格式：
+
+  ```json
+  {
+    "name": "username",
+    "in": "path",
+    "description": "username to fetch",
+    "required": true,
+    "schema": {
+      "type": "string"
+    }
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  name: username
+  in: path
+  description: username to fetch
+  required: true
+  schema:
+    type: string
+  ```
+
+可选的 query 参数，包含一个 string 值，通过重复 query 参数可获得多个值：
+
+- json 格式：
+
+  ```json
+  {
+    "name": "id",
+    "in": "query",
+    "description": "ID of the object to fetch",
+    "required": false,
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "style": "form",
+    "explode": true
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  name: id
+  in: query
+  description: ID of the object to fetch
+  required: false
+  schema:
+    type: array
+    items:
+      type: string
+  style: form
+  explode: true
+  ```
+
+自由格式的 query 参数，允许使用未定义的特定类型参数：
+
+- json 格式：
+
+  ```json
+  {
+    "in": "query",
+    "name": "freeForm",
+    "schema": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "style": "form"
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  in: query
+  name: freeForm
+  schema:
+    type: object
+    additionalProperties:
+      type: integer
+  style: form
+  ```
+
+使用 content 字段定义序列化的复杂参数（上面的示例，都是使用的 schema 字段定义序列化的参数）：
+
+- json 格式：
+
+  ```json
+  {
+    "in": "query",
+    "name": "coordinates",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "required": ["lat", "long"],
+          "properties": {
+            "lat": {
+              "type": "number"
+            },
+            "long": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  in: query
+  name: coordinates
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - lat
+          - long
+        properties:
+          lat:
+            type: number
+          long:
+            type: number
+  ```
 
 ### Schema Object
 
 `Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
 
 > 有关属性的更多信息，查看 [JSON Schema Core](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 和 [JSON Schema Validation](https://tools.ietf.org/html/draft-bhutton-json-schema-validation-00)。除非另有说明，否则属性定义均遵循 JSON Schema 的定义，不添加任何其他语义。
+
+
+
+### Request Body Object
 
 
 
@@ -880,14 +1124,6 @@
 
 
 ### Callback Object
-
-
-
-### Path Item Object
-
-
-
-## 
 
 
 
