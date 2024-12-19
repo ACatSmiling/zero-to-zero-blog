@@ -25,12 +25,12 @@
 | openapi           |                           `string`                           | **`REQUIRED`**. This string MUST be the [version number](https://swagger.io/specification/#versions) of the OpenAPI Specification that the OpenAPI document uses. The `openapi` field SHOULD be used by tooling to interpret the OpenAPI document. This is *not* related to the API [`info.version`](https://swagger.io/specification/#info-version) string. |
 | info              | [Info Object](https://swagger.io/specification/#info-object) | **`REQUIRED`**. Provides metadata about the API. The metadata MAY be used by tooling as required. |
 | jsonSchemaDialect |                           `string`                           | The default value for the `$schema` keyword within [Schema Objects](https://swagger.io/specification/#schema-object) contained within this OAS document. This MUST be in the form of a URI. |
-| servers           | [Server Object](https://swagger.io/specification/#server-object) | An array of Server Objects, which provide connectivity information to a target server. If the `servers` property is not provided, or is an empty array, the default value would be a [Server Object](https://swagger.io/specification/#server-object) with a [url](https://swagger.io/specification/#server-url) value of `/`. |
+| servers           | [[Server Object](https://swagger.io/specification/#server-object)] | An array of Server Objects, which provide connectivity information to a target server. If the `servers` property is not provided, or is an empty array, the default value would be a [Server Object](https://swagger.io/specification/#server-object) with a [url](https://swagger.io/specification/#server-url) value of `/`. |
 | paths             | [Paths Object](https://swagger.io/specification/#paths-object) | The available paths and operations for the API.              |
 | webhooks          | Map[`string`, [Path Item Object](https://swagger.io/specification/#path-item-object) \| [Reference Object](https://swagger.io/specification/#reference-object)] | The incoming webhooks that MAY be received as part of this API and that the API consumer MAY choose to implement. Closely related to the `callbacks` feature, this section describes requests initiated other than by an API call, for example by an out of band registration. The key name is a unique string to refer to each webhook, while the (optionally referenced) Path Item Object describes a request that may be initiated by the API provider and the expected responses. An [example](https://github.com/-o-a-i/-open-a-p-i--specification/blob/main/examples/v3.1/webhook-example.yaml) is available. |
 | components        | [Components Object](https://swagger.io/specification/#components-object) | An element to hold various schemas for the document.         |
-| security          | [Security Requirement Object](https://swagger.io/specification/#security-requirement-object) | A declaration of which security mechanisms can be used across the API. The list of values includes alternative security requirement objects that can be used. Only one of the security requirement objects need to be satisfied to authorize a request. Individual operations can override this definition. To make security optional, an empty security requirement (`{}`) can be included in the array. |
-| tags              |  [Tag Object](https://swagger.io/specification/#tag-object)  | A list of tags used by the document with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. Not all tags that are used by the [Operation Object](https://swagger.io/specification/#operation-object) must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. Each tag name in the list MUST be unique. |
+| security          | [[Security Requirement Object](https://swagger.io/specification/#security-requirement-object)] | A declaration of which security mechanisms can be used across the API. The list of values includes alternative security requirement objects that can be used. Only one of the security requirement objects need to be satisfied to authorize a request. Individual operations can override this definition. To make security optional, an empty security requirement (`{}`) can be included in the array. |
+| tags              | [[Tag Object](https://swagger.io/specification/#tag-object)] | A list of tags used by the document with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. Not all tags that are used by the [Operation Object](https://swagger.io/specification/#operation-object) must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. Each tag name in the list MUST be unique. |
 | externalDocs      | [External Documentation Object](https://swagger.io/specification/#external-documentation-object) | Additional external documentation.                           |
 
 ## 脉络
@@ -693,11 +693,62 @@ components:
 
 ### Tag Object
 
-`略，详见官网`。
+`Tag Object`：为 [Operation Object](https://swagger.io/specification/#operation-object) 使用的单个标记**添加元数据**。Operation Object 实例中定义的每个标记不一定必须有一个 Tag Object。包含以下字段：
 
-### Reference Object
+| Field Name   |                             Type                             | Description                                                  |
+| ------------ | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| name         |                           `string`                           | **`REQUIRED`**. The name of the tag.                         |
+| description  |                           `string`                           | A description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| externalDocs | [External Documentation Object](https://swagger.io/specification/#external-documentation-object) | Additional external documentation for this tag.              |
 
-`略，详见官网`。
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "name": "pet",
+    "description": "Pets operations"
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  name: pet
+  description: Pets operations
+  ```
+
+### External Documentation Object
+
+`External Documentation Object`：允许**引用外部资源来扩展文档**。包含以下字段：
+
+| Field Name  |   Type   | Description                                                  |
+| ----------- | :------: | ------------------------------------------------------------ |
+| description | `string` | A description of the target documentation. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| url         | `string` | **`REQUIRED`**. The URI for the target documentation. This MUST be in the form of a URI. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "description": "Find more info here",
+    "url": "https://example.com"
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  description: Find more info here
+  url: https://example.com
+  ```
 
 ## 组成
 
@@ -1169,13 +1220,9 @@ path 参数，使用 string 值：
             type: number
   ```
 
-### Schema Object
+### Header Object
 
-`Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
-
-> 有关属性的更多信息，查看 [JSON Schema Core](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 和 [JSON Schema Validation](https://tools.ietf.org/html/draft-bhutton-json-schema-validation-00)。除非另有说明，否则属性定义均遵循 JSON Schema 的定义，不添加任何其他语义。
-
-
+`Header Object`：
 
 ### Request Body Object
 
@@ -1280,14 +1327,6 @@ path 参数，使用 string 值：
 
 
 
-
-
-
-
-### Header Object
-
-
-
 ### Security Scheme Object
 
 
@@ -1300,7 +1339,17 @@ path 参数，使用 string 值：
 
 
 
-## 
+## 通用
 
-## External Documentation Object
+### Reference Object
+
+`略，详见官网`。
+
+### Schema Object
+
+`Schema Object`：用于**定义输入和输出的数据类型**，这些类型可以是对象，也可以是原始值和数组。这个对象是 [JSON Schema Specification Draft 2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 扩展后的子集。
+
+> 有关属性的更多信息，查看 [JSON Schema Core](https://tools.ietf.org/html/draft-bhutton-json-schema-00) 和 [JSON Schema Validation](https://tools.ietf.org/html/draft-bhutton-json-schema-validation-00)。除非另有说明，否则属性定义均遵循 JSON Schema 的定义，不添加任何其他语义。
+
+
 
