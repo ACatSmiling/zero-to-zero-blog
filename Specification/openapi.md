@@ -398,7 +398,7 @@
 
 ### Components Object
 
-`Components Object`：包含 OpenAPI 规范固定的各种可重用组件，当没有被其他对象引用时，在这里定义定义的组件不会产生任何效果。包含以下字段：
+`Components Object`：**包含 OpenAPI 规范固定的各种可重用组件，当没有被其他对象引用时，在这里定义定义的组件不会产生任何效果。**包含以下字段：
 
 | Field Name      | Type                                                         | Description                                                  |
 | --------------- | :----------------------------------------------------------- | ------------------------------------------------------------ |
@@ -415,7 +415,7 @@
 
 - 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
 
-- 上面定义的所有字段的值都是对象，对象包含的 key 的命名必须满足正则表达式： `^[a-zA-Z0-9\.\-_]+$`。示例如下：
+- 上面定义的所有字段的 value 都是对象，对象包含的 key 的命名必须满足正则表达式： `^[a-zA-Z0-9\.\-_]+$`。示例如下：
 
   ```tex
   User
@@ -602,6 +602,90 @@
               write:pets: modify pets in your account
               read:pets: read your pets
   ```
+
+引用示例：
+
+```yaml
+paths:
+  /pet:
+    post:
+      tags:
+        - pet
+      summary: Add a new pet to the store
+      description: Add a new pet to the store
+      operationId: addPet
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Pet'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+components:
+  schemas:
+    Pet:
+      required:
+        - name
+        - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: doggie
+        category:
+          $ref: '#/components/schemas/Category'
+        photoUrls:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            type: string
+            xml:
+              name: photoUrl
+        tags:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          type: string
+          description: pet status in the store
+          enum:
+            - available
+            - pending
+            - sold
+      xml:
+        name: pet
+```
 
 ### Security Requirement Object
 
@@ -1095,7 +1179,96 @@ path 参数，使用 string 值：
 
 ### Request Body Object
 
+`Request Body Object`：定义**请求体**。包含以下字段：
 
+| Field Name  |                             Type                             | Description                                                  |
+| ----------- | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| description |                           `string`                           | A brief description of the request body. This could contain examples of use. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation. |
+| content     | Map[`string`, [Media Type Object](https://swagger.io/specification/#media-type-object)] | **`REQUIRED`**. The content of the request body. The key is a media type or [media type range](https://tools.ietf.org/html/rfc7231#appendix--d) and the value describes it. For requests that match multiple keys, only the most specific key is applicable. e.g. `"text/plain"` overrides `"text/*"` |
+| required    |                          `boolean`                           | Determines if the request body is required in the request. Defaults to `false`. |
+
+- 这个对象可能会被 [Specification Extensions](https://swagger.io/specification/#specification-extensions) 扩展。
+
+示例：
+
+- json 格式：
+
+  ```json
+  {
+    "description": "user to add to the system",
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/User"
+        },
+        "examples": {
+          "user": {
+            "summary": "User Example",
+            "externalValue": "https://foo.bar/examples/user-example.json"
+          }
+        }
+      },
+      "application/xml": {
+        "schema": {
+          "$ref": "#/components/schemas/User"
+        },
+        "examples": {
+          "user": {
+            "summary": "User example in XML",
+            "externalValue": "https://foo.bar/examples/user-example.xml"
+          }
+        }
+      },
+      "text/plain": {
+        "examples": {
+          "user": {
+            "summary": "User example in Plain text",
+            "externalValue": "https://foo.bar/examples/user-example.txt"
+          }
+        }
+      },
+      "*/*": {
+        "examples": {
+          "user": {
+            "summary": "User example in other format",
+            "externalValue": "https://foo.bar/examples/user-example.whatever"
+          }
+        }
+      }
+    }
+  }
+  ```
+
+- yaml 格式：
+
+  ```yaml
+  description: user to add to the system
+  content:
+    application/json:
+      schema:
+        $ref: '#/components/schemas/User'
+      examples:
+        user:
+          summary: User example
+          externalValue: https://foo.bar/examples/user-example.json
+    application/xml:
+      schema:
+        $ref: '#/components/schemas/User'
+      examples:
+        user:
+          summary: User example in XML
+          externalValue: https://foo.bar/examples/user-example.xml
+    text/plain:
+      examples:
+        user:
+          summary: User example in plain text
+          externalValue: https://foo.bar/examples/user-example.txt
+    '*/*':
+      examples:
+        user:
+          summary: User example in other format
+          externalValue: https://foo.bar/examples/user-example.whatever
+  ```
 
 ### Response Object
 
@@ -1126,6 +1299,8 @@ path 参数，使用 string 值：
 ### Callback Object
 
 
+
+## 
 
 ## External Documentation Object
 
