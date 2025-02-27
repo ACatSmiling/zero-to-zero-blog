@@ -2,7 +2,7 @@
 >
 >*`Since: 2024-11-05`*
 
-
+![1729868273763](kubernetes-series-03-diving-into-pod/1729868273763.jpg)
 
 ## kubectl 命令
 
