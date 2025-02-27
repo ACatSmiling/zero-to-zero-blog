@@ -1,4 +1,4 @@
-> *`Author: ACatSmiling`*
+﻿> *`Author: ACatSmiling`*
 >
 > *`Since: 2024-12-05`*
 
