@@ -162,13 +162,13 @@ open(file, mode='r', buffering=-1, encoding_=None, errors=None, newline=None, cl
 
   | mode   | 解释                                                         |
   | ------ | ------------------------------------------------------------ |
-  | **r**  | 只读，默认模式，文件必须存在，不存在则抛出异常               |
-  | **w**  | 只写，写之前会清空文件的内容，如果文件不存在，会创建新文件   |
-  | **a**  | 追加的方式，在原本内容中继续写，如果文件不存在，则会创建新文件 |
+  | **r**  | 只读，默认模式，文件的指针将会放在文件的开头。文件必须存在，不存在则抛出异常 |
+  | **w**  | 只写，文件的指针将会放在文件的开头，写之前会清空文件的内容。如果文件不存在，会创建新文件 |
+  | **a**  | 追加的方式，文件的指针将会放在文件的结尾，在原本内容中继续写。如果文件不存在，则会创建新文件 |
   | **r+** | 可读可写                                                     |
   | **w+** | 打开一个文件用于读写。如果该文件已存在则将其覆盖。如果该文件不存在，创建新文件。 |
   | **a+** | 打开一个文件用于读写。如果该文件已存在，文件指针将会放在文件的结尾。文件打开时会是追加模式。如果该文件不存在，创建新文件用于读写 |
-  | **b**  | rb、wb、ab、rb+、wb+、ab+ 意义和上面一样，用于二进制文件操作 |
+  | **b**  | rb、wb、ab、rb+、wb+、ab+ 意义和上面一样，用于二进制文件操作，例如图片、音频、视频等 |
 
 - 返回值：返回一个对象，这个对象就代表了当前打开的文件。
 
@@ -246,6 +246,9 @@ try:
     # open() 打开文件时，默认是以文本文件的形式打开的，但是 open() 默认的编码为 None
     #   所以处理文本文件时，必须要指定文件的编码
     with open(file_name, encoding='utf-8') as file_obj:
+        # 首先，判断文件是否可读，增加容错
+        print(file_obj.readable())  # True
+
         # 通过 read() 来读取文件中的内容
         # 如果直接调用 read() 它会将文本文件的所有内容全部都读取出来
         #   如果要读取的文件较大的话，会一次性将文件的内容加载到内存中，容易导致内存泄漏
@@ -313,8 +316,11 @@ try:
         # pprint.pprint(r[0])  # 'aaa\n'
         # pprint.pprint(r[1])  # 'bbb\n'
         # pprint.pprint(r[2])  # 'ccc\n'
+        
+        # file_obj 是一个可迭代对象
+        print(isinstance(file_obj, collections.abc.Iterator))  # True
 
-        # 简化写法
+        # 简化写法，遍历 file_obj，也可以遍历 readlines() 方法返回的行列表
         for t in file_obj:
             print(t, end='')
 
@@ -341,6 +347,9 @@ file_name = 'demo1.txt'
 # with open(file_name , 'w' , encoding='utf-8') as file_obj:
 # with open(file_name , 'r+' , encoding='utf-8') as file_obj:
 with open(file_name, 'x', encoding='utf-8') as file_obj:
+    # 首先，判断文件是否可读，增加容错
+    print(file_obj.writable())  # True
+
     # write() 来向文件中写入内容
     # 如果操作的是一个文本文件的话，则 write() 需要传递一个字符串作为参数
     # 该方法会可以分多次向文件中写入内容
@@ -420,6 +429,9 @@ with open('demo.txt', 'rt', encoding='utf-8') as file_obj:
     file_obj.seek(9)  # 从头开始计算，切换到第 9 个字节开始读取
     print(file_obj.read())
 ```
+
+- 文本文件的操作模式下，seek() 方法的第二个参数只能写 0。
+- 如果希望 seek() 方法的第二个蚕食是 1 或者 2，必须在二进制文件的操作模式下。
 
 ### 文件的其他操作
 
