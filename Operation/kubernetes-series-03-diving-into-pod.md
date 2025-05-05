@@ -80,6 +80,7 @@
 
    - 输出结果通常包含以下列：
 
+     - **NAMESPACE**：Pod 所在的命名空间。
      - **NAME**：Pod 的名称，用于在集群中唯一标识 Pod。
      - **READY**：显示准备就绪的容器数量与总容器数量的比例。
      - **STATUS**：Pod 的当前状态，常见的状态有`Pending`（等待调度或资源分配）、`Running`（正在运行）、`Succeeded`（成功完成任务，通常用于一次性任务的 Pod）、`Failed`（运行失败）。
@@ -92,6 +93,27 @@
      [root@k8s-master pods]# kubectl get pods nginx-pod
      NAME        READY   STATUS    RESTARTS   AGE
      nginx-pod   1/1     Running   0          9h
+     ```
+
+   - `-A, --all-namespaces`：查看所有命名空间中的 Pod，默认情况下，kubectl 仅在当前上下文的默认命名空间（通常是 `default`）中操作。示例：
+
+     ```shell
+     [root@k8s-master pods]# kubectl get pods -A
+     NAMESPACE      NAME                                 READY   STATUS    RESTARTS       AGE
+     kube-flannel   kube-flannel-ds-cdfvm                1/1     Running   18 (28d ago)   180d
+     kube-flannel   kube-flannel-ds-fb79x                1/1     Running   19 (88m ago)   180d
+     kube-flannel   kube-flannel-ds-t7nkg                1/1     Running   18 (28d ago)   180d
+     kube-system    coredns-6d8c4cb4d-d6rrb              1/1     Running   14 (88m ago)   133d
+     kube-system    coredns-6d8c4cb4d-zsx7n              1/1     Running   14 (88m ago)   133d
+     kube-system    etcd-k8s-master                      1/1     Running   26 (88m ago)   188d
+     kube-system    kube-apiserver-k8s-master            1/1     Running   24 (88m ago)   188d
+     kube-system    kube-controller-manager-k8s-master   1/1     Running   29 (88m ago)   188d
+     kube-system    kube-proxy-6xntx                     1/1     Running   20 (28d ago)   181d
+     kube-system    kube-proxy-m2nbx                     1/1     Running   28 (88m ago)   188d
+     kube-system    kube-proxy-vzsp7                     1/1     Running   19 (28d ago)   181d
+     kube-system    kube-scheduler-k8s-master            1/1     Running   29 (88m ago)   188d
+     [root@k8s-master pods]# kubectl get pods
+     No resources found in default namespace.
      ```
 
    - `-n, --namespace`：查看特定命名空间中的 Pod。示例：
