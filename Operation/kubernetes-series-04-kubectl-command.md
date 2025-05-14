@@ -2370,6 +2370,6 @@ $ kubectl [command] [RESOURCE_TYPE] [RESOURCE_NAME] -o=<output_format
 
 本文基于 Kubernetes 1.23.6 版本，同时参考《Kubernetes 权威指南》第 5 版。
 
-# 声明
+## 声明
 
 写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 [wdshfut@163.com](mailto:wdshfut@163.com)。
